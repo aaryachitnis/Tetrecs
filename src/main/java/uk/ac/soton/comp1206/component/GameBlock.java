@@ -114,7 +114,6 @@ public class GameBlock extends Canvas {
      * @param newValue the new value
      */
     private void updateValue(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-        logger.info("what was updated: " + observable + " old value: " + oldValue + " new value: " + newValue);
         paint();
     }
 
@@ -148,7 +147,12 @@ public class GameBlock extends Canvas {
         gc.clearRect(0,0,width,height);
 
         //Fill
-        gc.setFill(Color.WHITE);
+        // filling the empty block colours
+        if (gameBoard instanceof PieceBoard){
+            gc.setFill(new Color(1, 1, 1, 0.8)); // for the boards of current and incoming piece
+        } else {
+            gc.setFill(new Color(1, 1, 1, 0.2)); // for the main game board
+        }
         gc.fillRect(0,0, width, height);
 
         //Border
@@ -219,16 +223,13 @@ public class GameBlock extends Canvas {
      */
     public void drawDot(GraphicsContext gc){
         // Draw a dot in the center of the pieceboards
-        logger.info("drawing dot");
         gc.setFill(Color.color(0,0,0,0.5));
         gc.fillOval(width/4,height/4,width/2,height/2);
     }
 
-//    public void fadeOut(){
-//        logger.info("blocks clear animation");
-////        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(4), this);
-////        fadeTransition.setToValue(0);
-////        fadeTransition.play();
-//    }
+    public void fadeOut(){
+        logger.info("blocks clear animation");
+
+    }
 
 }

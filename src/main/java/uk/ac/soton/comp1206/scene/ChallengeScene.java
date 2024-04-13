@@ -14,7 +14,7 @@ import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.PieceBoard;
-//import uk.ac.soton.comp1206.event.LineClearedListener;
+import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.GamePiece;
@@ -29,7 +29,7 @@ import java.util.HashSet;
 /**
  * The Single Player challenge scene. Holds the UI for the single player challenge mode in the game.
  */
-public class ChallengeScene extends BaseScene implements NextPieceListener {
+public class ChallengeScene extends BaseScene implements NextPieceListener, LineClearedListener {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
     protected Game game;
@@ -211,7 +211,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener {
 
         // listeners
         game.setNextPieceListener(this::nextPiece);
-//        game.setLineClearedListener(this::lineCleared);
+        game.setLineClearedListener(this::lineCleared);
     }
 
     /**
@@ -338,10 +338,11 @@ public class ChallengeScene extends BaseScene implements NextPieceListener {
         game.blockClicked(board.getBlock(selectedCol, selectedRow)); // playing piece at block selected using keys
     }
 
-//    public void lineCleared(HashSet<GameBlockCoordinate> blocksToClear){
-//        logger.info("Sending blocksToClear set to gameboard from challenge scene");
-//        board.fadeOut(blocksToClear);
-//    }
-
-
+    /**
+     * Calls the fadeOut method in GameBoard
+     * @param blocksToClear HashSet containing coordinates of all the blocks that need to be cleared
+     */
+    public void lineCleared(HashSet<GameBlockCoordinate> blocksToClear){
+        board.fadeOut(blocksToClear);
+    }
 }

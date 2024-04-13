@@ -174,11 +174,10 @@ public class GameBoard extends GridPane {
         }
     }
 
-//    public void fadeOut(HashSet<GameBlockCoordinate> blocksToClear){
-//        logger.info("GameBoard received blocksToClear");
-//        for (GameBlockCoordinate block : blocksToClear) { // iterate over the hash set
-//            getBlock(block.getX(), block.getY()).fadeOut(); // call fadeOut animation
-//        }
-//    }
+    public void fadeOut(HashSet<GameBlockCoordinate> blocksToClear){
+        for (GameBlockCoordinate block : blocksToClear) { // iterate over the hash set
+            getBlock(block.getX(), block.getY()).fadeOut(); // call fadeOut animation
+        }
+    }
 
 }

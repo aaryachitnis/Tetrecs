@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 //import uk.ac.soton.comp1206.event.LineClearedListener;
+import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 import uk.ac.soton.comp1206.utility.Multimedia;
 
@@ -69,11 +70,6 @@ public class Game {
     protected IntegerProperty multiplier = new SimpleIntegerProperty(1);
 
     /**
-     * Set of the blocks that need to be cleared
-     */
-//    private HashSet<GameBlockCoordinate> blocksToClear = new HashSet<>();
-
-    /**
      * NextPieceListener field
      */
     private NextPieceListener nextPieceListener;
@@ -81,15 +77,7 @@ public class Game {
     /**
      * LineClearedListener field
      */
-//    private LineClearedListener lineClearedListener;
-
-    /**
-     * Accessor method for the set of blocks to clear
-     * @return HashSet of the blocks that need to be cleared
-     */
-//    public HashSet<GameBlockCoordinate> getBlocksToClear(){
-//        return blocksToClear;
-//    }
+    private LineClearedListener lineClearedListener;
 
     /**
      * Get the grid model inside this game representing the game state of the board
@@ -255,7 +243,6 @@ public class Game {
             getGrid().playPiece(getCurrentPiece(), x, y, true); // playing the piece
             afterPiece(); // to clear any line
             logger.info("Cleared any lines");
-            // TODO: should nextPiece() be here instead
             logger.info("Next piece loading");
             nextPiece(); // loading the next piece
         } else {
@@ -297,7 +284,7 @@ public class Game {
      * Setting up listener for when line is cleared
      * @param listener listener
      */
-//    public void setLineClearedListener(LineClearedListener listener){lineClearedListener = listener;}
+    public void setLineClearedListener(LineClearedListener listener){lineClearedListener = listener;}
 
 
     /**
@@ -368,12 +355,11 @@ public class Game {
             logger.info("No lines cleared, score stays the same, multiplier reset");
         }
 
-
-        // TODO: need to double check if this works after adding the next piece window
         // clearing blocks
         if (!blocksToClear.isEmpty()){
+            multimedia.playAudio("sounds/clear.wav"); // playing the sound for cleared lines
             clearBlocks(blocksToClear);
-//            lineClearedListener.lineCleared(blocksToClear);
+            lineClearedListener.lineCleared(blocksToClear); // sending blocksToClear to lineClearedListener for fadeOut effect
         } else {
             logger.info("No blocks to clear");
         }
