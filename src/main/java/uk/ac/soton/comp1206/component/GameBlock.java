@@ -176,9 +176,9 @@ public class GameBlock extends Canvas {
         gc.strokeRect(0,0,width,height);
 
         // drawing dot at the center block
-//        if ((gameBoard instanceof PieceBoard) && (getX() == 1) && (getY() == 1)){
-//            drawDot(gc);
-//        }
+        if ((gameBoard instanceof PieceBoard) && (getX() == 1) && (getY() == 1)){
+            drawDot(gc);
+        }
     }
 
     /**
