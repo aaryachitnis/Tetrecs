@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.component;
 
+import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -11,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javafx.util.Duration;
+
+import java.math.BigDecimal;
 
 /**
  * The Visual User Interface component representing a single block in the grid.
@@ -227,9 +230,33 @@ public class GameBlock extends Canvas {
         gc.fillOval(width/4,height/4,width/2,height/2);
     }
 
+
+    private double opacity;
+
     public void fadeOut(){
         logger.info("blocks clear animation");
+        var gc = getGraphicsContext2D();
+        opacity = 1;
 
+        var fadeTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                paint(); // to return to the empty block colour
+
+                // fill colour is set to white
+                gc.setFill(Color.color(1,1,1, opacity)); // opacity is decremented
+                gc.fillRect(0,0,width,height);
+
+                if (opacity == 0.0){
+                    this.stop(); // stopping timer when opacity reaches 0 (becomes transparent basically)
+                }
+
+                // opacity is decremented by 0.06 until it reaches 0 so that it fades out more each time handle() is called
+                opacity = opacity - 0.06;
+            }
+        };
+
+        fadeTimer.start();
     }
 
 }
