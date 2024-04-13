@@ -13,6 +13,8 @@ import uk.ac.soton.comp1206.utility.Multimedia;
 
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * The Game class handles the main logic, state and properties of the TetrECS game. Methods to manipulate the game state
@@ -68,6 +70,21 @@ public class Game {
      * Bindable property for multiplier
      */
     protected IntegerProperty multiplier = new SimpleIntegerProperty(1);
+
+    /**
+     * Bindable property for timer
+     */
+    protected IntegerProperty timerDelay = new SimpleIntegerProperty(12000);
+
+    /**
+     * Timer object
+     */
+    private Timer timer;
+
+    /**
+     * TimerTask object
+     */
+    private TimerTask timerTask;
 
     /**
      * NextPieceListener field
@@ -196,7 +213,7 @@ public class Game {
      * @param newLives remaining lives
      */
     public void setLives(int newLives){
-        level.set(newLives);
+        lives.set(newLives);
     }
 
     /**
@@ -218,6 +235,7 @@ public class Game {
     public void start() {
         logger.info("Starting game");
         initialiseGame();
+        startTimer();
     }
 
     /**
@@ -419,5 +437,69 @@ public class Game {
         setCurrentPiece(getIncomingPiece());
         setIncomingPiece(temp);
     }
+
+    /**
+     * Updates timerDelay
+     */
+    public void setTimerDelay(){
+        logger.info("level: " + getLevel().get());
+        int delay = 12000 - 500 * getLevel().get();
+        logger.info("timer delay: " + delay);
+        // if delay is less than 2500, set timerDelay to 2500, otherwise the calculated delay
+        if (delay >= 2500){
+            timerDelay.set(delay);
+        } else {
+            timerDelay.set(2500);
+        }
+        logger.info("Timer delay set");
+    }
+
+    /**
+     * Accessor method for timerDelay
+     * @return timerDelay
+     */
+    public IntegerProperty getTimerDelay(){
+        return timerDelay;
+    }
+
+    public void gameLoop(){
+        logger.info("timer reached 0");
+
+        // lose a life
+        multimedia.playAudio("sounds/lifelose.wav"); // play life lost sound
+        setLives(getLives().get()-1);
+        logger.info("Lives remaining: " + getLives().get());
+        if (getLives().get() == 0){ // if lives left are 0, end the game
+            multimedia.playAudio("sounds/fail.wav"); // play failed game sound
+            logger.info("Game over");
+            // TODO: end game
+            // go to game over scene (or score scene?)
+        }
+
+        // current piece is replaced with the incoming piece which is replaced by a new piece
+        logger.info("Discarding current piece");
+        nextPiece();
+
+        // resetting timer
+        logger.info("Resetting timer");
+        startTimer(); // restart timer
+
+        // reset multiplier to 1
+        setMultiplier(1);
+    }
+
+    public void startTimer(){
+        logger.info("timer started");
+        timer = new Timer();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                gameLoop();
+            }
+        };
+        setTimerDelay();
+        timer.schedule(timerTask, getTimerDelay().get());
+    }
+
 
 }

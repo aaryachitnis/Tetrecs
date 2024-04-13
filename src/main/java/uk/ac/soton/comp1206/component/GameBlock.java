@@ -76,6 +76,11 @@ public class GameBlock extends Canvas {
     private boolean hoverOn;
 
     /**
+     * Used in fadeOut(), this is gradually decremented
+     */
+    private double opacity;
+
+    /**
      * Updates the hoverOn attribute and calls the paint method so that the hover effect can be displayed
      * @param on whether hover effect should be on or off
      */
@@ -230,11 +235,11 @@ public class GameBlock extends Canvas {
         gc.fillOval(width/4,height/4,width/2,height/2);
     }
 
-
-    private double opacity;
-
+    /**
+     * Fades out the cleared blocks slowly
+     */
     public void fadeOut(){
-        logger.info("blocks clear animation");
+//        logger.info("blocks clear animation");
         var gc = getGraphicsContext2D();
         opacity = 1;
 

@@ -181,9 +181,13 @@ public class Grid {
                 }
             }
         }
-        logger.info("Piece played");
+        if (play){
+            logger.info("Piece played"); // if the piece is played on the main gameboard
+
+        } else {
+            logger.info("Piece displayed on pieceboards");
+        }
     }
 
 }
-
 

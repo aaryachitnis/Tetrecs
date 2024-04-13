@@ -130,7 +130,6 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         var mainPane = new BorderPane();
         challengePane.getChildren().add(mainPane);
 
-//        var board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
         board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
         mainPane.setCenter(board);
 
@@ -162,7 +161,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         levelText.getStyleClass().add("level"); // Styling text
         mainPane.setLeft(levelBox);
 
-        // title
+        // styling title
         title.getStyleClass().add("title");
 
         // top pane
