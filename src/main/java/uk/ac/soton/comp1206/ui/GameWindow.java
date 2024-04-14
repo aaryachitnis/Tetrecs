@@ -88,8 +88,18 @@ public class GameWindow {
         loadScene(new ChallengeScene(this));
     }
 
+    /**
+     * Display the instructions scene
+     */
     public void showInstructions() {
         loadScene(new InstructionScene(this));
+    }
+
+    /**
+     * Display score scene
+     */
+    public void showScoreScene(){
+        loadScene(new ScoreScene(this));
     }
 
     /**

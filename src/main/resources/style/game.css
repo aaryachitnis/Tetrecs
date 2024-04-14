@@ -21,6 +21,11 @@
     -fx-background-size: cover;
 }
 
+.scores-background {
+    -fx-background-image: url("../images/4.jpg");
+    -fx-background-size: cover;
+}
+
 .menu {
     -fx-padding: 10;
 }
@@ -56,21 +61,21 @@
 .title {
     -fx-fill: white;
     -fx-font-family: 'Orbitron';
-    -fx-font-size: 20px;
+    -fx-font-size: 30px;
     -fx-font-weight: 900;
     -fx-border-color: black;
     -fx-stroke: black;
     -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
 }
 
-.instructionsTitle {
-    -fx-text-fill: white;
+.instructions-title {
+    -fx-fill: white;
     -fx-font-family: 'Orbitron';
     -fx-font-size: 20px;
-    -fx-font-weight: 700;
+    -fx-font-weight: 900;
+    -fx-border-color: black;
     -fx-stroke: black;
     -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
-    -fx-alignment: Center;
 }
 
 .heading {
@@ -96,7 +101,7 @@
 .score {
     -fx-fill: yellow;
     -fx-font-family: 'Orbitron';
-    -fx-font-size: 36px;
+    -fx-font-size: 32px;
     -fx-font-weight: 700;
     -fx-border-color: black;
     -fx-stroke: black;
@@ -129,7 +134,7 @@
 .lives {
     -fx-fill: yellow;
     -fx-font-family: 'Orbitron';
-    -fx-font-size: 36px;
+    -fx-font-size: 32px;
     -fx-font-weight: 700;
     -fx-border-color: black;
     -fx-stroke: black;

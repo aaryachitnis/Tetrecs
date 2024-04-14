@@ -23,6 +23,9 @@ public class MenuScene extends BaseScene {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
 
+    /**
+     * To play background music
+     */
     private Multimedia multimedia = new Multimedia();
 
     /**

@@ -9,12 +9,9 @@ import uk.ac.soton.comp1206.utility.Multimedia;
 /**
  * The Grid is a model which holds the state of a game board. It is made up of a set of Integer values arranged in a 2D
  * arrow, with rows and columns.
- *
  * Each value inside the Grid is an IntegerProperty can be bound to enable modification and display of the contents of
  * the grid.
- *
  * The Grid contains functions related to modifying the model, for example, placing a piece inside the grid.
- *
  * The Grid should be linked to a GameBoard for its display.
  */
 public class Grid {
@@ -134,15 +131,11 @@ public class Grid {
                 int gridY = y - 1 + row;
 
                 if (blocks[row][col] != 0) { // if the block of the piece isn't empty
-//                    logger.info("Block isnt empty");
                     if ( (gridX < getCols()) || (gridY < getRows())){ // checks if piece is within the boundary of the game grid
-//                        logger.info("Block within boundary");
                         if (get(gridX, gridY) != 0){ // if piece already exists in this block
-//                            logger.warn("Piece already exists here");
                             return false; // piece can't be played if it is
                         }
                     } else {
-//                        logger.warn("Piece is outside the boundary of the game grid");
                         return false;
                     }
                 }

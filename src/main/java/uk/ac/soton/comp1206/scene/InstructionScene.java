@@ -56,7 +56,7 @@ public class InstructionScene extends BaseScene {
 
         // Title
         Text title = new Text("How to play");
-        title.getStyleClass().add("title");
+        title.getStyleClass().add("instructions-title");
         title.setTranslateX(350);
 
         // Description of the game

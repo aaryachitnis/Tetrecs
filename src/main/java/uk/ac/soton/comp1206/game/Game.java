@@ -6,8 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBlockCoordinate;
-//import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.GameLoopListener;
+import uk.ac.soton.comp1206.event.GameOverListener;
 import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 import uk.ac.soton.comp1206.utility.Multimedia;
@@ -40,6 +40,9 @@ public class Game {
      */
     protected final Grid grid;
 
+    /**
+     * For playing sounds and background music
+     */
     private Multimedia multimedia = new Multimedia();
 
     /**
@@ -103,6 +106,11 @@ public class Game {
     private GameLoopListener gameLoopListener;
 
     /**
+     * GameOverListener field
+     */
+    private GameOverListener gameOverListener;
+
+    /**
      * Setting up listener for when the nextPiece needs to be called
      * @param listener listener
      */
@@ -117,10 +125,16 @@ public class Game {
     public void setLineClearedListener(LineClearedListener listener){lineClearedListener = listener;}
 
     /**
-     * Setting up lister for when time is running
+     * Setting up listener for when time is running
      * @param listener listener
      */
     public void setGameLoopListener(GameLoopListener listener){gameLoopListener = listener;}
+
+    /**
+     * Calls the Scores scene
+     * @param listener listener
+     */
+    public void setGameOverListener(GameOverListener listener){gameOverListener = listener;}
 
     /**
      * Get the grid model inside this game representing the game state of the board
@@ -455,7 +469,6 @@ public class Game {
      * Updates timerDelay
      */
     public void setTimerDelay(){
-        logger.info("level: " + getLevel().get());
         int delay = 12000 - 500 * getLevel().get();
         logger.info("timer delay: " + delay);
         // if delay is less than 2500, set timerDelay to 2500, otherwise the calculated delay
@@ -487,12 +500,9 @@ public class Game {
         // lose a life
         multimedia.playAudio("sounds/lifelose.wav"); // play life lost sound
         setLives(getLives().get()-1);
-        logger.info("Lives remaining: " + getLives().get());
-        if (getLives().get() == 0){ // if lives left are 0, end the game
-            multimedia.playAudio("sounds/fail.wav"); // play failed game sound
+        if (getLives().get() < 0){ // if lives left are 0, end the game
             logger.info("Game over");
-            // TODO: end game
-            // go to game over scene (or score scene?)
+            gameOverListener.onGameOver(); // go to the scores scene
         }
 
         // current piece is replaced with the incoming piece which is replaced by a new piece
@@ -508,7 +518,7 @@ public class Game {
     }
 
     /**
-     * Starts the timer
+     * Starts the timer and calls gameLoop method when the timer runs out
      */
     public void startTimer(){
         // TODO: gameLoop shouldnt be called if piece is placed, start timer after piece has been placed?
@@ -518,18 +528,15 @@ public class Game {
             @Override
             public void run() {
                 gameLoop();
-//                if (!piecePlayed){
-//                    logger.info("piece wasnt played, calling game loop");
-//                    gameLoop();
-//                }
-//                logger.info("Piece was played, not calling game loop");
-//                restartTimer();
             }
         };
         setTimerDelay();
         timer.schedule(timerTask, getTimerDelay().get());
     }
 
+    /**
+     * Stops and purges the timer before starting it again
+     */
     public void restartTimer(){
         logger.info("restarting timer");
         if (timer != null){
@@ -537,8 +544,11 @@ public class Game {
             timer.purge();
         }
         startTimer();
-
     }
 
+    public void stopTimer(){
+        logger.info("Stopped timer");
+        timer.cancel();
+    }
 
 }

@@ -2,7 +2,6 @@ package uk.ac.soton.comp1206.scene;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -34,6 +33,10 @@ import java.util.HashSet;
 public class ChallengeScene extends BaseScene implements NextPieceListener, LineClearedListener {
 
     private static final Logger logger = LogManager.getLogger(MenuScene.class);
+
+    /**
+     * Handles the logic of the game
+     */
     protected Game game;
 
     /**
@@ -72,15 +75,13 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     public Text title = new Text("Single Player");
 
     /**
-     * NextPieceListener field to listen to new pieces generated inside the Game
-     */
-    public NextPieceListener nextPieceListener;
-
-    /**
      * For sound effects
      */
     private Multimedia multimedia = new Multimedia();
 
+    /**
+     * Main gameboard where pieces will be placed
+     */
     protected GameBoard board;
 
     /**
@@ -103,6 +104,10 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      */
     private int selectedCol = 0;
 
+    /**
+     * Time bar to show how much time is remaining
+     * Is an attribute and not local var so that the listener method implementation can access it too
+     */
     protected Rectangle timeBar = new Rectangle(gameWindow.getWidth(),20);
 
     /**
@@ -169,7 +174,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         title.getStyleClass().add("title");
 
         // top pane
-        HBox topBox = new HBox(100); // Spacing between boxes
+        HBox topBox = new HBox(105); // Spacing between boxes
         topBox.getChildren().addAll(scoreBox, title, livesBox);
         mainPane.setTop(topBox);
 
@@ -187,9 +192,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             }
         });
 
-        // Time bar
-
-//        timeBar.setFill(Color.GREEN);
+        // Set the time bar at the bottom of the pane
         mainPane.setBottom(timeBar);
 
         game.setGameLoopListener((e) -> {
@@ -226,6 +229,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         game.setNextPieceListener(this::nextPiece);
         game.setLineClearedListener(this::lineCleared);
         game.setGameLoopListener(this::timeBar);
+        game.setGameOverListener(this::gameOver);
     }
 
     /**
@@ -279,6 +283,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         if (event.getCode() == KeyCode.ESCAPE){ // escape key pressed
             logger.info("Escape pressed, going to menu scene");
             multimedia.stopBgMusic(); // stop background music
+            game.stopTimer(); // stops timer
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
         }
@@ -360,29 +365,43 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         board.fadeOut(blocksToClear);
     }
 
+    /**
+     * Displaying the timebar
+     * @param time time allocated in which user must place a piece
+     */
     public void timeBar(int time){
         logger.info("showing time bar");
         long startTime = System.currentTimeMillis();
-        long endTime = startTime + time;
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 long currentTime = System.currentTimeMillis();
-                long elapsed = currentTime - startTime;
+                long elapsed = currentTime - startTime; // calculate how much time has passed
                 if (elapsed >= time) {
                     this.stop();  // Stop the timer when the time is up
-                    timeBar.setFill(Color.RED);  // Final color to indicate time is up
+                    timeBar.setFill(Color.RED);  // Final colour is red (indicating time is up)
                 } else {
                     double fraction = (double) elapsed / time;
-                    // Interpolate the color from green (0,1,0) to red (1,0,0)
+                    // Slowly increase the red value of colour while decreasing the green value of colour by the same amount
                     Color currentColor = Color.color(fraction, 1 - fraction, 0);
                     timeBar.setFill(currentColor);
-                    timeBar.setWidth(gameWindow.getWidth() * (1 - fraction));  // Decrease width as time passes
+                    // Decrease width as time passes to show time decreasing
+                    timeBar.setWidth(gameWindow.getWidth() * (1 - fraction));
                 }
             }
         };
         timer.start();  // Start the timer
+    }
+
+    public void gameOver(){
+        // go to the Scores Scene
+        Platform.runLater(() -> {
+            multimedia.stopBgMusic(); // stop bg music
+            multimedia.playAudio("sounds/transition.wav"); // transition to score scene
+            game.stopTimer(); // stop timer
+            gameWindow.showScoreScene();
+        });
     }
 
 }
