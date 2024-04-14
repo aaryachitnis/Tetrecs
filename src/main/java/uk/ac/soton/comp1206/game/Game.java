@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBlockCoordinate;
 //import uk.ac.soton.comp1206.event.LineClearedListener;
+import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
 import uk.ac.soton.comp1206.utility.Multimedia;
@@ -97,6 +98,31 @@ public class Game {
     private LineClearedListener lineClearedListener;
 
     /**
+     * GameLoopListener field
+     */
+    private GameLoopListener gameLoopListener;
+
+    /**
+     * Setting up listener for when the nextPiece needs to be called
+     * @param listener listener
+     */
+    public void setNextPieceListener(NextPieceListener listener){
+        this.nextPieceListener = listener;
+    }
+
+    /**
+     * Setting up listener for when line is cleared
+     * @param listener listener
+     */
+    public void setLineClearedListener(LineClearedListener listener){lineClearedListener = listener;}
+
+    /**
+     * Setting up lister for when time is running
+     * @param listener listener
+     */
+    public void setGameLoopListener(GameLoopListener listener){gameLoopListener = listener;}
+
+    /**
      * Get the grid model inside this game representing the game state of the board
      * @return game grid model
      */
@@ -143,7 +169,6 @@ public class Game {
     public IntegerProperty getScore(){
         return score;
     }
-
     /**
      * Get the current level
      * @return current level
@@ -264,6 +289,7 @@ public class Game {
             logger.info("Next piece loading");
             nextPiece(); // loading the next piece
         } else {
+
             logger.info("Piece can't be played");
             multimedia.playAudio("sounds/fail.wav"); // play the fail sound if piece cant be plated
         }
@@ -289,20 +315,6 @@ public class Game {
         incomingPiece = spawnPiece();
         nextPieceListener.nextPiece(currentPiece, incomingPiece);
     }
-
-    /**
-     * Setting up listener for when the nextPiece needs to be called
-     * @param listener listener
-     */
-    public void setNextPieceListener(NextPieceListener listener){
-        this.nextPieceListener = listener;
-    }
-
-    /**
-     * Setting up listener for when line is cleared
-     * @param listener listener
-     */
-    public void setLineClearedListener(LineClearedListener listener){lineClearedListener = listener;}
 
 
     /**
@@ -381,6 +393,8 @@ public class Game {
         } else {
             logger.info("No blocks to clear");
         }
+
+        restartTimer();
     }
 
     /**
@@ -404,7 +418,6 @@ public class Game {
     public void score(int linesToClear, int blocksToClear){
         int scoreToAdd = linesToClear * blocksToClear * getMultiplier().get() * 10; // calculate the score to add
         setScore( (getScore().get()) + scoreToAdd); // set new score
-        logger.info("Score: " + getScore().get());
     }
 
     /**
@@ -452,6 +465,8 @@ public class Game {
             timerDelay.set(2500);
         }
         logger.info("Timer delay set");
+
+        gameLoopListener.setOnGameLoop(getTimerDelay().get()); // send the timer delay to the listener
     }
 
     /**
@@ -462,6 +477,10 @@ public class Game {
         return timerDelay;
     }
 
+    /**
+     * Handles what must be done when the timer reaches 0
+     * Lose a life, current piece is discarded, multiplier is reset to 1 and timer is reset
+     */
     public void gameLoop(){
         logger.info("timer reached 0");
 
@@ -480,25 +499,45 @@ public class Game {
         logger.info("Discarding current piece");
         nextPiece();
 
+        // reset multiplier to 1
+        setMultiplier(1);
+
         // resetting timer
         logger.info("Resetting timer");
         startTimer(); // restart timer
-
-        // reset multiplier to 1
-        setMultiplier(1);
     }
 
+    /**
+     * Starts the timer
+     */
     public void startTimer(){
+        // TODO: gameLoop shouldnt be called if piece is placed, start timer after piece has been placed?
         logger.info("timer started");
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
             public void run() {
                 gameLoop();
+//                if (!piecePlayed){
+//                    logger.info("piece wasnt played, calling game loop");
+//                    gameLoop();
+//                }
+//                logger.info("Piece was played, not calling game loop");
+//                restartTimer();
             }
         };
         setTimerDelay();
         timer.schedule(timerTask, getTimerDelay().get());
+    }
+
+    public void restartTimer(){
+        logger.info("restarting timer");
+        if (timer != null){
+            timer.cancel();
+            timer.purge();
+        }
+        startTimer();
+
     }
 
 

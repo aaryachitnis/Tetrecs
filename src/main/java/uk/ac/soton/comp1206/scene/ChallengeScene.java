@@ -1,5 +1,7 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -101,6 +103,8 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      */
     private int selectedCol = 0;
 
+    protected Rectangle timeBar = new Rectangle(gameWindow.getWidth(),20);
+
     /**
      * Create a new Single Player challenge scene
      * @param gameWindow the Game Window
@@ -183,6 +187,16 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             }
         });
 
+        // Time bar
+
+//        timeBar.setFill(Color.GREEN);
+        mainPane.setBottom(timeBar);
+
+        game.setGameLoopListener((e) -> {
+            Platform.runLater(() ->
+                    timeBar(game.getTimerDelay().get()));
+        });
+
         // rotate piece right if currentPieceBoard is left-clicked
         currentPieceBoard.setOnMouseClicked(event -> rotatePiece(false));
 
@@ -211,6 +225,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         // listeners
         game.setNextPieceListener(this::nextPiece);
         game.setLineClearedListener(this::lineCleared);
+        game.setGameLoopListener(this::timeBar);
     }
 
     /**
@@ -344,4 +359,30 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     public void lineCleared(HashSet<GameBlockCoordinate> blocksToClear){
         board.fadeOut(blocksToClear);
     }
+
+    public void timeBar(int time){
+        logger.info("showing time bar");
+        long startTime = System.currentTimeMillis();
+        long endTime = startTime + time;
+
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                long currentTime = System.currentTimeMillis();
+                long elapsed = currentTime - startTime;
+                if (elapsed >= time) {
+                    this.stop();  // Stop the timer when the time is up
+                    timeBar.setFill(Color.RED);  // Final color to indicate time is up
+                } else {
+                    double fraction = (double) elapsed / time;
+                    // Interpolate the color from green (0,1,0) to red (1,0,0)
+                    Color currentColor = Color.color(fraction, 1 - fraction, 0);
+                    timeBar.setFill(currentColor);
+                    timeBar.setWidth(gameWindow.getWidth() * (1 - fraction));  // Decrease width as time passes
+                }
+            }
+        };
+        timer.start();  // Start the timer
+    }
+
 }

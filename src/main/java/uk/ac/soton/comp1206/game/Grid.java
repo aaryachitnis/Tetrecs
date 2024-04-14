@@ -134,15 +134,15 @@ public class Grid {
                 int gridY = y - 1 + row;
 
                 if (blocks[row][col] != 0) { // if the block of the piece isn't empty
-                    logger.info("Block isnt empty");
+//                    logger.info("Block isnt empty");
                     if ( (gridX < getCols()) || (gridY < getRows())){ // checks if piece is within the boundary of the game grid
-                        logger.info("Block within boundary");
+//                        logger.info("Block within boundary");
                         if (get(gridX, gridY) != 0){ // if piece already exists in this block
-                            logger.warn("Piece already exists here");
+//                            logger.warn("Piece already exists here");
                             return false; // piece can't be played if it is
                         }
                     } else {
-                        logger.warn("Piece is outside the boundary of the game grid");
+//                        logger.warn("Piece is outside the boundary of the game grid");
                         return false;
                     }
                 }
@@ -183,7 +183,6 @@ public class Grid {
         }
         if (play){
             logger.info("Piece played"); // if the piece is played on the main gameboard
-
         } else {
             logger.info("Piece displayed on pieceboards");
         }
