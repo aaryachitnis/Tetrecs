@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.App;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 import uk.ac.soton.comp1206.utility.Multimedia;
@@ -177,7 +178,7 @@ public class MenuScene extends BaseScene {
      * Exit the game and close the game window
      */
     public void shutDownGame(){
-        // TODO: exit game
+        System.exit(0);
     }
 
 }
