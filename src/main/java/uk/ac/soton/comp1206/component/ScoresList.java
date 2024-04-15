@@ -6,6 +6,7 @@ import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.game.Game;
 
 public class ScoresList extends VBox{
 

@@ -3,6 +3,8 @@ package uk.ac.soton.comp1206.scene;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -54,12 +56,24 @@ public class ScoreScene extends BaseScene{
     protected ScoresList scoresList = new ScoresList();
 
     /**
+     * To get the state of the previous game
+     */
+    protected Game game;
+
+    /**
+     * Score achieved in the previous game
+     */
+    protected int newScore;
+
+    /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
      *
      * @param gameWindow the game window
      */
-    public ScoreScene(GameWindow gameWindow) {
+    public ScoreScene(GameWindow gameWindow, Game g) {
         super(gameWindow);
+        game = g;
+        newScore = game.getScore().get();
         logger.info("Creating score scene");
     }
 
@@ -90,28 +104,57 @@ public class ScoreScene extends BaseScene{
         gameOverTitle.getStyleClass().add("bigtitle");
         highScoreTitle.getStyleClass().add("title");
         gameOverTitle.setTranslateX(200);
-        highScoreTitle.setTranslateX(300);
+//        highScoreTitle.setTranslateX(300);
 
         VBox titlesTopPane = new VBox(20);
         titlesTopPane.getChildren().add(title);
         titlesTopPane.getChildren().add(gameOverTitle);
-        titlesTopPane.getChildren().add(highScoreTitle);
+//        titlesTopPane.getChildren().add(highScoreTitle);
         mainPane.setTop(titlesTopPane);
 
-        // binding the ScoresList scores to the ScoresScene scores list
-
         loadScores(); // populate the scoresArrayList
-//        for (Pair<String, Integer> pair : localScores) {
-//            String name = pair.getKey();
-//            Integer score = pair.getValue();
-//            logger.info(name + ": "  + score);
-//        }
         logger.info("Scores have been loaded");
 
+        // binding the ScoresList scores to the ScoresScene scores list
         scoresList.getScoresListProperty().bind(localScores);
-        mainPane.setCenter(scoresList);
-        scoresList.reveal(); // displaying the scores
-        scoresList.setTranslateX(250);
+
+        VBox highScoreList = new VBox(highScoreTitle, scoresList);
+        VBox centerBox = new VBox();
+//        centerBox.setTranslateX(250);
+        mainPane.setCenter(centerBox);
+
+        logger.info("Score was: " + newScore + ". Checking if new high score was set..");
+        if (checkNewHighScore()){ // checking if the new score was higher than any scores in the list
+            logger.info("Prompting user to enter name");
+            Text highScoreSetMsg = new Text("You set a new high score!");
+            highScoreSetMsg.getStyleClass().add("high-score-set-msg");
+            Text namePrompt = new Text("Enter your name");
+            namePrompt.getStyleClass().add("title");
+            TextField nameTextField = new TextField();
+            Button submitButton = new Button("Submit");
+            // TODO: style the submit button
+
+            VBox nameBox = new VBox(highScoreSetMsg, namePrompt, nameTextField, submitButton);
+            centerBox.getChildren().add(nameBox);
+
+            submitButton.setOnAction(event -> {
+                String playerName = nameTextField.getText(); // Save the entered name to the variable
+                logger.info("Name submitted: " + playerName);
+                centerBox.getChildren().remove(nameBox);
+                centerBox.getChildren().add(highScoreList);
+                newHighScoreSet(playerName);
+                loadScores();
+                scoresList.reveal(); // displaying the scores
+
+            });
+        }
+
+        if (!checkNewHighScore()){ // if there is no new high score, display the high score list directly
+            localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
+            centerBox.getChildren().add(highScoreList);
+            scoresList.reveal(); // displaying the scores
+        }
+
 
     }
 
@@ -138,6 +181,7 @@ public class ScoreScene extends BaseScene{
                 writer.write("Vettel:500\n");
                 writer.write("Ocon:300\n");
                 writer.write("Gasly:100\n");
+                writer.close();
                 logger.info("Created and populated file");
             }
 
@@ -156,33 +200,19 @@ public class ScoreScene extends BaseScene{
                 logger.info("updated arraylist");
             }
             logger.info("Populated scoresArrayList");
+            fileReader.close();
 
         } catch (IOException e) {
             logger.error("loadScores method didnt execute");
             throw new RuntimeException(e);
         }
-
-        // get the score from the Game
-        // check if it beats any of the scores
-        // if it does, prompt user to type their name
-            // insert name and score in the arraylist at the correct position
-            // call writeScores method and overwrite the whole arraylist to the file
-
-        // get score
-        // if its higher than any of the values in the array list
-            // prompt user to enter their name
-            // add their name and score to the list
-            // sort the list
-            // remove the last element so that there's only 10 elements in the list
-            // pass the arraylist to writeScores() so that the localScores.txt file can be updated
-        // Read from file like normal
-
     }
 
     public void writeScores(){
         // sort the arraylist in descending order
-        scoresArrayList.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
+//        scoresArrayList.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
 
+        logger.info("Writing new high score to file..");
         File localScoresFile = new File("localScores.txt");
         try {
             FileWriter writer = new FileWriter(localScoresFile);
@@ -193,10 +223,44 @@ public class ScoreScene extends BaseScene{
                 writer.write(pair.getKey() + ":" + pair.getValue() + "\n");
             }
             logger.info("Written to file");
+            writer.close();
         } catch (IOException e) {
             logger.info("Couldn't write to file");
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Check if new high score was set by comparing the values in the scoresArrayList to the new score
+     * @return return true if new high score was set
+     */
+    public boolean checkNewHighScore(){
+//        logger.info("in checkNewHighScore method");
+        for (Pair<String, Integer> pair : scoresArrayList) {
+            if (newScore > pair.getValue()) {
+                logger.info("New high score was set");
+                return true; // Return true if there is a new high score
+            }
+        }
+        logger.info("No new high score");
+        return false; // Return false if there is no new high score
+    }
+
+    public void newHighScoreSet(String name){
+        logger.info("updating scoresArrayList after a new high score was set");
+        // add their name and score to the list
+        scoresArrayList.add(new Pair<>(name, newScore));
+
+        // sort the arraylist in descending order
+        scoresArrayList.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
+
+        // remove the last element so that there's only 10 elements in the list
+        scoresArrayList.remove(10);
+
+//        localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
+
+        // call writeScores() so that the localScores.txt file can be updated
+        writeScores();
     }
 
 }

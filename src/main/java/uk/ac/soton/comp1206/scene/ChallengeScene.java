@@ -400,7 +400,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             multimedia.stopBgMusic(); // stop bg music
             multimedia.playAudio("sounds/transition.wav"); // transition to score scene
             game.stopTimer(); // stop timer
-            gameWindow.showScoreScene();
+            gameWindow.showScoreScene(game);
         });
     }
 

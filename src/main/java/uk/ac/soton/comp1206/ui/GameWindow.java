@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.App;
+import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.scene.*;
 import uk.ac.soton.comp1206.utility.Multimedia;
@@ -98,8 +99,8 @@ public class GameWindow {
     /**
      * Display score scene
      */
-    public void showScoreScene(){
-        loadScene(new ScoreScene(this));
+    public void showScoreScene(Game game){
+        loadScene(new ScoreScene(this, game));
     }
 
     /**

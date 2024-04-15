@@ -5,6 +5,6 @@ Piastri:1300
 Ricardo:1100
 Hamilton:900
 Leclerc:700
-aarya:680
 Vettel:500
 Ocon:300
+Gasly:100
