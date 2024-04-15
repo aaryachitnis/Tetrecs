@@ -140,7 +140,7 @@ public class GameBlock extends Canvas {
         }
 
         if (hoverOn){
-            gc.setFill(new Color(0.2, 0.2, 0.2, 0.5)); // 50% grey
+            gc.setFill(new Color(0.2, 0.2, 0.2, 0.7)); // 50% opacity
             gc.fillRect(0,0,width,height);
         }
     }

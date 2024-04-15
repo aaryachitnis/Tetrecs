@@ -162,6 +162,10 @@ public class ScoreScene extends BaseScene{
 
     }
 
+    /**
+     * Populates the scoresArrayList using the file.
+     * If file doesn't exist, create one with dummy data
+     */
     public void loadScores(){
         logger.info("Loading scores");
         try {
@@ -208,6 +212,9 @@ public class ScoreScene extends BaseScene{
         }
     }
 
+    /**
+     * Write the contents of the scoresArrayList to the file
+     */
     public void writeScores(){
         // sort the arraylist in descending order
 //        scoresArrayList.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
@@ -246,6 +253,10 @@ public class ScoreScene extends BaseScene{
         return false; // Return false if there is no new high score
     }
 
+    /**
+     * Adds new high score to the scoresArrayList and calls the writeScores() method to write it to the file
+     * @param name Name of the player that set the high score
+     */
     public void newHighScoreSet(String name){
         logger.info("updating scoresArrayList after a new high score was set");
         // add their name and score to the list
@@ -256,8 +267,6 @@ public class ScoreScene extends BaseScene{
 
         // remove the last element so that there's only 10 elements in the list
         scoresArrayList.remove(10);
-
-//        localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
 
         // call writeScores() so that the localScores.txt file can be updated
         writeScores();

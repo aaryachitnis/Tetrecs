@@ -98,6 +98,16 @@
     -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
 }
 
+.incoming-pieces-heading {
+    -fx-fill: white;
+    -fx-font-family: 'Orbitron';
+    -fx-font-size: 25px;
+    -fx-font-weight: 900;
+    -fx-border-color: black;
+    -fx-stroke: black;
+    -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
+}
+
 .description {
     -fx-text-fill: white;
     -fx-font-family: 'Orbitron';

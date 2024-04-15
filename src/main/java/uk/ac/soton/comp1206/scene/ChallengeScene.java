@@ -24,6 +24,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
 import uk.ac.soton.comp1206.utility.Multimedia;
 import javafx.geometry.Insets;
 
+import java.io.*;
 import java.util.HashSet;
 
 
@@ -55,6 +56,11 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     public Text livesText = new Text();
 
     /**
+     * Storing the value of the current local high score
+     */
+    public Text highScoreText = new Text();
+
+    /**
      * Label for score
      */
     public Text scoreLabel = new Text("Score: ");
@@ -68,6 +74,16 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      * Label for lives
      */
     public Text livesLabel = new Text("Lives: ");
+
+    /**
+     * Label for high score
+     */
+    public Text highScoreLabel = new Text("High Score:");
+
+    /**
+     * Label for incoming pieces
+     */
+    public Text incomingPiecesLabel = new Text("Incoming:");
 
     /**
      * Title of the scene
@@ -92,7 +108,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     /**
      * PieceBoard for the incoming game piece
      */
-    private PieceBoard incomingPieceBoard = new PieceBoard(120,120);
+    private PieceBoard incomingPieceBoard = new PieceBoard(100,100);
 
     /**
      * y-coordinate of the selected block
@@ -162,14 +178,6 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         livesLabel.getStyleClass().add("lives"); // Styling label
         livesText.getStyleClass().add("lives"); // Styling text
 
-        // displaying level
-        levelText = new Text(); // stores the current level
-        levelText.textProperty().bind(game.getLevel().asString()); // binding to the level IntegerProperty
-        HBox levelBox = new HBox(levelLabel, levelText); // Horizontal box for the label and text
-        levelLabel.getStyleClass().add("level"); // Styling label
-        levelText.getStyleClass().add("level"); // Styling text
-        mainPane.setLeft(levelBox);
-
         // styling title
         title.getStyleClass().add("title");
 
@@ -177,12 +185,34 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         HBox topBox = new HBox(105); // Spacing between boxes
         topBox.getChildren().addAll(scoreBox, title, livesBox);
         mainPane.setTop(topBox);
+        topBox.setPadding(new Insets(10, 10, 10, 10));  // Top, Right, Bottom, Left padding
+
+        // displaying level
+        levelText = new Text(); // stores the current level
+        levelText.textProperty().bind(game.getLevel().asString()); // binding to the level IntegerProperty
+        HBox levelBox = new HBox(levelLabel, levelText); // Horizontal box for the label and text
+        levelLabel.getStyleClass().add("level"); // Styling label
+        levelText.getStyleClass().add("level"); // Styling text
+
+        // displaying high score
+        highScoreText = new Text(getHighScore());
+        VBox highScoreBox = new VBox(highScoreLabel, highScoreText);
+        highScoreLabel.getStyleClass().add("hiscore"); // Styling label
+        highScoreText.getStyleClass().add("hiscore"); // Styling text
+
+        VBox leftBox = new VBox(10);
+        leftBox.getChildren().add(levelBox);
+        leftBox.getChildren().add(highScoreBox);
+        mainPane.setLeft(leftBox);
+        leftBox.setTranslateX(10);
+
 
         // displaying PieceBoards for current and incoming pieces
         VBox pieceBoardBox = new VBox(20);
-        pieceBoardBox.getChildren().addAll(currentPieceBoard, incomingPieceBoard);
+        incomingPiecesLabel.getStyleClass().add("incoming-pieces-heading");
+        pieceBoardBox.getChildren().addAll(incomingPiecesLabel,currentPieceBoard, incomingPieceBoard);
         mainPane.setRight(pieceBoardBox);
-        pieceBoardBox.setTranslateY(150);
+        pieceBoardBox.setTranslateY(100);
         pieceBoardBox.setPadding(new Insets(20)); // 10 pixels padding
 
         // rotate current right piece if gameboard is right-clicked
@@ -394,6 +424,9 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         timer.start();  // Start the timer
     }
 
+    /**
+     * Call the ScoresScene when lives remaining reach 0 and game is over
+     */
     public void gameOver(){
         // go to the Scores Scene
         Platform.runLater(() -> {
@@ -402,6 +435,26 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             game.stopTimer(); // stop timer
             gameWindow.showScoreScene(game);
         });
+    }
+
+    /**
+     * Gets the first line of the localScores text file to get the highest score
+     * @return the score in the first line of file
+     */
+    public String getHighScore(){
+        // Get the top high score when starting a game in the ChallengeScene and display it in the UI
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("localScores.txt"))) {
+            String firstLine = reader.readLine();  // Read only the first line
+            if (firstLine != null) {
+                String[] parts = firstLine.split(":", 2); // Split the line into two parts
+                return parts[1];
+            }
+        } catch (IOException e) {
+            logger.info("Exception in getting high score");
+            e.printStackTrace();
+        }
+        return "";
     }
 
 }
