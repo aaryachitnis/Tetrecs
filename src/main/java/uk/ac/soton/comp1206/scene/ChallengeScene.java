@@ -32,7 +32,7 @@ import java.util.HashSet;
  */
 public class ChallengeScene extends BaseScene implements NextPieceListener, LineClearedListener {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(ChallengeScene.class);
 
     /**
      * Handles the logic of the game
@@ -370,7 +370,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      * @param time time allocated in which user must place a piece
      */
     public void timeBar(int time){
-        logger.info("showing time bar");
+//        logger.info("showing time bar");
         long startTime = System.currentTimeMillis();
 
         AnimationTimer timer = new AnimationTimer() {

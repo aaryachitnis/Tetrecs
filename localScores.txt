@@ -1,0 +1,10 @@
+Verstappen:2000
+Sainz:1700
+Norris:1500
+Piastri:1300
+Ricardo:1100
+Hamilton:900
+Leclerc:700
+Vettel:500
+Ocon:300
+Gasly:100
