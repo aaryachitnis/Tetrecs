@@ -115,6 +115,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      */
     ArrayList<String> userList = new ArrayList<>();
 
+    BooleanProperty hasJoinedGameProperty = new SimpleBooleanProperty(false);
 
     /**
      * Whether the user is hosting a game or not
@@ -161,6 +162,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         leftBox.getChildren().add(channelsBox);
 
         // right box
+        rightBox.visibleProperty().bind(hasJoinedGameProperty);
         mainPane.setRight(rightBox);
         rightBox.getChildren().add(currentChannelName);
         currentChannelName.getStyleClass().add("heading");
@@ -345,6 +347,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         // channelName would be "Game: <channel name>"
         String channelName = currentChannelName.getText() + gameInfo.split(" ")[1];
         currentChannelName.setText(channelName);
+        hasJoinedGameProperty.set(true);
     }
 
     /**
@@ -389,6 +392,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         messages.setText("");
         userList.clear();
         isHostProperty.set(false);
+        hasJoinedGameProperty.set(false);
     }
 
     /**
