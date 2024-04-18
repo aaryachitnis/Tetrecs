@@ -125,7 +125,7 @@ public class MenuScene extends BaseScene {
      */
     @Override
     public void initialise() {
-        scene.setOnKeyPressed(this::escapePressed);
+        scene.setOnKeyPressed(this::handleKey);
     }
 
     /**
@@ -144,6 +144,7 @@ public class MenuScene extends BaseScene {
      */
     private void startMultiplayerGame(ActionEvent event){
         logger.info("Starting multiplayer game");
+        gameWindow.showLobbyScene();
     }
 
     /**
@@ -168,7 +169,7 @@ public class MenuScene extends BaseScene {
      * Handle when escape key is pressed and shut down the game
      * @param event escape key being pressed
      */
-    public void escapePressed(KeyEvent event){
+    public void handleKey(KeyEvent event){
         if (event.getCode() == KeyCode.ESCAPE){
             shutDownGame();
         }

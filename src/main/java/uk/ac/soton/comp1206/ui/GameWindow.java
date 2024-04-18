@@ -104,6 +104,13 @@ public class GameWindow {
     }
 
     /**
+     * Display the Lobby scene
+     */
+    public void showLobbyScene(){
+        loadScene(new LobbyScene(this));
+    }
+
+    /**
      * Setup the default settings for the stage itself (the window), such as the title and minimum width and height.
      */
     public void setupStage() {

@@ -7,6 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -159,7 +161,8 @@ public class ScoreScene extends BaseScene{
     }
 
     public void initialise(){
-
+        // add keyboard support here
+        scene.setOnKeyPressed(this::handleKey);
     }
 
     /**
@@ -270,6 +273,14 @@ public class ScoreScene extends BaseScene{
 
         // call writeScores() so that the localScores.txt file can be updated
         writeScores();
+    }
+
+    public void handleKey(KeyEvent event){
+        if (event.getCode() == KeyCode.ESCAPE){
+            logger.info("Escape pressed, going to menu scene");
+            gameWindow.cleanup(); // clean up the window before going back to the menu scene
+            gameWindow.startMenu();
+        }
     }
 
 }

@@ -26,6 +26,16 @@
     -fx-background-size: cover;
 }
 
+.lobby-background {
+    -fx-background-image: url("../images/5.jpg");
+    -fx-background-size: cover;
+}
+
+.multiplayer-background {
+    -fx-background-image: url("../images/6.jpg");
+    -fx-background-size: cover;
+}
+
 .menu {
     -fx-padding: 10;
 }
@@ -93,6 +103,16 @@
     -fx-font-family: 'Orbitron';
     -fx-font-size: 20px;
     -fx-font-weight: 700;
+    -fx-border-color: black;
+    -fx-stroke: black;
+    -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
+}
+
+.small-heading {
+    -fx-fill: white;
+    -fx-font-family: 'Orbitron';
+    -fx-font-size: 18px;
+    -fx-font-weight: 300;
     -fx-border-color: black;
     -fx-stroke: black;
     -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
