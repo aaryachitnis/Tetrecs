@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -42,14 +43,24 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     protected Text currentGameHeading = new Text("Current Games");
 
     /**
-     * Contains all the available channels
-     */
-    protected VBox channelsBox = new VBox(5);
-
-    /**
      * When a user joins a game, this will hold the name of that channel
      */
     protected Text currentChannelName = new Text("Game: ");
+
+    /**
+     * Heading for players in the game
+     */
+    protected Text playerNames = new Text("Players: ");
+
+    /**
+     * Explains how to change nickname
+     */
+    protected Text gameDescription = new Text("Welcome to the lobby!\nType /nick NewName to change your name");
+
+    /**
+     * Contains all the available channels
+     */
+    protected VBox channelsBox = new VBox(5);
 
     /**
      * Will contain the channel name and messages of the game a user joins
@@ -59,7 +70,22 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     /**
      * This will contain messages within a game
      */
-    protected VBox chatBox = new VBox();
+    protected VBox chatBox = new VBox(5);
+
+    /**
+     * Will hold the names of the players in the game
+     */
+    protected VBox playerBox = new VBox();
+
+    /**
+     * Will contain the messages sent between players
+     */
+    protected VBox messagesBox = new VBox(2);
+
+    /**
+     * Will contain the start game (if isHost = true) and the leave game buttons
+     */
+    protected HBox chatBoxBtnsBox = new HBox(450);
 
     /**
      * Arraylist containing all the nicknames
@@ -67,7 +93,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     ArrayList<String> nicknameList = new ArrayList<>();
 
     /**
-     * Arraylist containing all the usernames
+     * Arraylist containing all the usernames, will be used when displaying scores
      */
     ArrayList<String> userList = new ArrayList<>();
 
@@ -75,7 +101,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     /**
      * Whether the user is hosting a game or not
      */
-    protected boolean hosting = false;
+    protected boolean isHost = false;
     // TODO: change this to false when the user hits the leave game btn
 
     /**
@@ -86,6 +112,9 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         super(gameWindow);
     }
 
+    /**
+     * Building the Lobby Scene
+     */
     public void build(){
         root = new GamePane(gameWindow.getWidth(),gameWindow.getHeight());
 
@@ -124,6 +153,17 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         chatBox.setTranslateY(10);
         rightBox.setTranslateX(-5);
 
+        // Chat box
+        playerBox.getChildren().add(playerNames);
+        playerNames.getStyleClass().add("player-names");
+        chatBox.getChildren().add(playerBox);
+        gameDescription.getStyleClass().add("game-description");
+        chatBox.getChildren().add(gameDescription);
+        chatBox.getChildren().add(messagesBox);
+        messagesBox.setPrefWidth(500);
+        messagesBox.setPrefHeight(400);
+        chatBox.getChildren().add(chatBoxBtnsBox);
+
         // title
         title.getStyleClass().add("title");
         mainPane.setTop(title);
@@ -155,6 +195,19 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
                 communicator.send("CREATE " + channelName);
             });
         });
+
+        // Leave button in the chatBox
+        var leaveGameBtn = new Button("Leave game");
+        chatBoxBtnsBox.getChildren().add(leaveGameBtn);
+
+        leaveGameBtn.setOnAction(actionEvent -> {
+            communicator.send("PART"); // leave game
+        });
+
+        // Start game button if user is the host
+        // TODO: show this if you are the host, set to bottom
+        var startGameBtn = new Button("Start game");
+
     }
 
     public void initialise(){
@@ -206,11 +259,13 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         } else if (communication.contains("JOIN")) {
             gameJoined(communication);
         } else if (communication.contains("HOST")) {
-            hosting = true;
+            isHost = true;
         } else if (communication.contains("NICK")){
             getNicknameList(communication);
-        } else if ((communication.contains("USERS"))) {
+        } else if (communication.contains("USERS")) {
             getUserList(communication);
+        } else if (communication.contains("PART")) {
+            leaveChannel();
         }
 
     }
@@ -267,13 +322,19 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      */
     public void getUserList(String users){
         userList.clear(); // clear any previous user list
+
         Platform.runLater(() -> {
             String[] splitNames = users.split(" ");
-
+            String players = new String();
             for (int i = 1; i < splitNames.length; i++) {
+                players = playerNames.getText() + splitNames[i] + ", ";
                 userList.add(splitNames[i]);  // Add each channel name to the list
             }
+            playerNames.setText(players);
         });
     }
 
+    public void leaveChannel(){
+        // TODO: clear everything that needs to be cleared and make the right box disappear
+    }
 }

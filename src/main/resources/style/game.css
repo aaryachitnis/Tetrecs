@@ -282,3 +282,15 @@ TextField {
     -fx-fill: rgba(128, 128, 128, 0.5); /* Grey color with 50% opacity */
     -fx-blend-mode: multiply; /* Apply blend mode to blend the colors */
 }
+
+.player-names{
+    -fx-font-size: 15px;
+    -fx-font-family: 'Orbitron';
+    -fx-fill: white;
+}
+
+.game-description{
+    -fx-font-size: 12px;
+    -fx-font-family: 'Orbitron';
+    -fx-fill: white;
+}
