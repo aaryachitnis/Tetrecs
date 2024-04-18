@@ -245,9 +245,6 @@
     -fx-background-color: transparent;
     -fx-font-size: 12px;
     -fx-font-family: 'Orbitron';
-}
-
-.messages Text {
     -fx-fill: white;
 }
 

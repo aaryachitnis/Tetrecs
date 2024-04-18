@@ -1,7 +1,10 @@
 package uk.ac.soton.comp1206.scene;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -58,6 +61,21 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     protected Text gameDescription = new Text("Welcome to the lobby!\nType /nick NewName to change your name");
 
     /**
+     * Will contain all the messages sent and received
+     */
+    protected Text messages = new Text();
+
+    /**
+     * To send messages
+     */
+    protected TextField messageTextField = new TextField();
+
+    /**
+     * Start game button for users that are hosts of the game
+     */
+    protected Button startGameBtn = new Button("Start game");
+
+    /**
      * Contains all the available channels
      */
     protected VBox channelsBox = new VBox(5);
@@ -75,7 +93,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     /**
      * Will hold the names of the players in the game
      */
-    protected VBox playerBox = new VBox();
+    protected HBox playerBox = new HBox();
 
     /**
      * Will contain the messages sent between players
@@ -85,7 +103,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     /**
      * Will contain the start game (if isHost = true) and the leave game buttons
      */
-    protected HBox chatBoxBtnsBox = new HBox(450);
+    protected HBox chatBoxBtnsBox = new HBox(315);
 
     /**
      * Arraylist containing all the nicknames
@@ -100,9 +118,9 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
 
     /**
      * Whether the user is hosting a game or not
+     * Bindable property so that the visibility of the button can be dynamically changed
      */
-    protected boolean isHost = false;
-    // TODO: change this to false when the user hits the leave game btn
+    BooleanProperty isHostProperty = new SimpleBooleanProperty(false);
 
     /**
      * Create a new Lobby scene for multiplayer games
@@ -157,12 +175,43 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         playerBox.getChildren().add(playerNames);
         playerNames.getStyleClass().add("player-names");
         chatBox.getChildren().add(playerBox);
+        playerBox.setPrefWidth(450);
         gameDescription.getStyleClass().add("game-description");
         chatBox.getChildren().add(gameDescription);
         chatBox.getChildren().add(messagesBox);
         messagesBox.setPrefWidth(500);
-        messagesBox.setPrefHeight(400);
+        messagesBox.setPrefHeight(350);
+        messagesBox.getChildren().add(messages);
+        messages.getStyleClass().add("messages");
+        chatBox.getChildren().add(messageTextField);
         chatBox.getChildren().add(chatBoxBtnsBox);
+        chatBoxBtnsBox.setPrefWidth(480);
+
+        // Bind the visibility of the button to the value of isHostProperty
+        startGameBtn.visibleProperty().bind(isHostProperty);
+        chatBoxBtnsBox.getChildren().add(startGameBtn);
+
+        startGameBtn.setOnAction(actionEvent -> {
+            // TODO: start the multiplayer game
+        });
+
+        // Leave button in the chatBox
+        var leaveGameBtn = new Button("Leave game");
+        chatBoxBtnsBox.getChildren().add(leaveGameBtn);
+
+        leaveGameBtn.setOnAction(actionEvent -> {
+            communicator.send("PART"); // leave game
+        });
+
+
+        // Sending messages when user hits enter
+        messageTextField.setOnAction(event -> {
+            String enteredMsg = messageTextField.getText();
+            messageTextField.clear();
+            logger.info("Entered text: " + enteredMsg);
+            communicator.send("MSG " + enteredMsg);
+        });
+
 
         // title
         title.getStyleClass().add("title");
@@ -179,35 +228,20 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         // Displaying text field when hostNewGamesBtn is clicked
         hostNewGamesBtn.setOnAction(event -> {
             TextField channelNameTextField = new TextField();
-            Button createButton = new Button("Create"); // TODO: style this
             hostGameBox.getChildren().add(channelNameTextField);
-            hostGameBox.getChildren().add(createButton);
 
-            createButton.setOnAction(createGameEvent -> {
+            channelNameTextField.setOnAction(creatGameEvent -> {
                 String channelName = channelNameTextField.getText(); // store the channel name user entered
                 logger.info("Hosting new game: " + channelName);
 
-                // remove text field and button
+                // remove text field
                 hostGameBox.getChildren().remove(channelNameTextField);
-                hostGameBox.getChildren().remove(createButton);
 
                 // send request to create new game
                 communicator.send("CREATE " + channelName);
             });
+
         });
-
-        // Leave button in the chatBox
-        var leaveGameBtn = new Button("Leave game");
-        chatBoxBtnsBox.getChildren().add(leaveGameBtn);
-
-        leaveGameBtn.setOnAction(actionEvent -> {
-            communicator.send("PART"); // leave game
-        });
-
-        // Start game button if user is the host
-        // TODO: show this if you are the host, set to bottom
-        var startGameBtn = new Button("Start game");
-
     }
 
     public void initialise(){
@@ -259,13 +293,17 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         } else if (communication.contains("JOIN")) {
             gameJoined(communication);
         } else if (communication.contains("HOST")) {
-            isHost = true;
+            isHostProperty.set(true);
         } else if (communication.contains("NICK")){
             getNicknameList(communication);
         } else if (communication.contains("USERS")) {
             getUserList(communication);
-        } else if (communication.contains("PART")) {
+        } else if (communication.contains("PARTED")) {
             leaveChannel();
+        } else if (communication.contains("MSG")) {
+            messages(communication);
+        } else if (communication.contains("ERROR")) {
+            handleError(communication);
         }
 
     }
@@ -291,10 +329,18 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
                 channelsBox.getChildren().add(channelNameBtn);
                 channelNameBtn.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
                 channelNameBtn.setTextFill(Color.WHITE);
+
+                channelNameBtn.setOnAction(createGameEvent -> {
+                    communicator.send("JOIN " + channel);
+                });
             }
         });
     }
 
+    /**
+     * Displays channel name
+     * @param gameInfo channel name
+     */
     public void gameJoined(String gameInfo){
         // channelName would be "Game: <channel name>"
         String channelName = currentChannelName.getText() + gameInfo.split(" ")[1];
@@ -324,17 +370,52 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         userList.clear(); // clear any previous user list
 
         Platform.runLater(() -> {
-            String[] splitNames = users.split(" ");
-            String players = new String();
-            for (int i = 1; i < splitNames.length; i++) {
-                players = playerNames.getText() + splitNames[i] + ", ";
-                userList.add(splitNames[i]);  // Add each channel name to the list
-            }
-            playerNames.setText(players);
+            String players = users.substring(users.indexOf(' ') + 1);
+            // Replace all newlines with commas to format the string
+            players = players.replaceAll("\n", ", ");
+            logger.info("Players display: " + players);
+            playerNames.setText("Players: " + players);
         });
     }
 
+    /**
+     * Clears the relevant parts of the lobby scene after user has parted from a game
+     */
     public void leaveChannel(){
-        // TODO: clear everything that needs to be cleared and make the right box disappear
+        // The channel is already removed from the server by this point
+        // just need to clear everything
+        currentChannelName.setText("Game: ");
+        playerNames.setText("Players: ");
+        messages.setText("");
+        userList.clear();
+        isHostProperty.set(false);
+    }
+
+    /**
+     * Display messages received in the chat box
+     * @param communication String containing player name and their message
+     */
+    public void messages(String communication){
+        logger.info("Message comm display: " + communication);
+        String[] comm = communication.split(":");
+        String name = comm[0].split(" ")[1]; // to remove the "MSG" part of the communication
+        String msg = comm[1];
+        messages.setText(messages.getText() + name + ": " + msg + "\n");
+    }
+
+    /**
+     * Displays a pop-up window displaying the error message
+     * @param errorMsg the error message
+     */
+    public void handleError(String errorMsg){
+        String[] parts = errorMsg.split(" ", 2);
+        String error = parts[1];
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText(error);
+            alert.setHeaderText(null);  // Optional: remove the header
+            alert.showAndWait();
+        });
     }
 }
