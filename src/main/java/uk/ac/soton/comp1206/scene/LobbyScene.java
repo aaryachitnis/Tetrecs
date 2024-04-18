@@ -41,7 +41,42 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      */
     protected Text currentGameHeading = new Text("Current Games");
 
+    /**
+     * Contains all the available channels
+     */
     protected VBox channelsBox = new VBox(5);
+
+    /**
+     * When a user joins a game, this will hold the name of that channel
+     */
+    protected Text currentChannelName = new Text("Game: ");
+
+    /**
+     * Will contain the channel name and messages of the game a user joins
+     */
+    protected VBox rightBox = new VBox(2);
+
+    /**
+     * This will contain messages within a game
+     */
+    protected VBox chatBox = new VBox();
+
+    /**
+     * Arraylist containing all the nicknames
+     */
+    ArrayList<String> nicknameList = new ArrayList<>();
+
+    /**
+     * Arraylist containing all the usernames
+     */
+    ArrayList<String> userList = new ArrayList<>();
+
+
+    /**
+     * Whether the user is hosting a game or not
+     */
+    protected boolean hosting = false;
+    // TODO: change this to false when the user hits the leave game btn
 
     /**
      * Create a new Lobby scene for multiplayer games
@@ -78,6 +113,16 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         // channels VBox
         leftBox.getChildren().add(channelsBox);
 
+        // right box
+        mainPane.setRight(rightBox);
+        rightBox.getChildren().add(currentChannelName);
+        currentChannelName.getStyleClass().add("heading");
+        rightBox.getChildren().add(chatBox);
+        chatBox.getStyleClass().add("gameBox");
+        chatBox.setPrefWidth(500);
+        chatBox.setPrefHeight(500);
+        chatBox.setTranslateY(10);
+        rightBox.setTranslateX(-5);
 
         // title
         title.getStyleClass().add("title");
@@ -118,13 +163,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         communicator.addListener(this::receiveCommunication);
 
         // get a list of channels from server at regular intervals
-        Timer timer = new Timer();
-        TimerTask getChannels = new TimerTask() {
-            public void run() {
-                requestChannels(); // ask server for the list of channels available
-            }
-        };
-        timer.scheduleAtFixedRate(getChannels, 0, 5000L); // channels will be requested every 5 seconds
+        requestChannels();
 
         // handle keyboard keys pressed
         scene.setOnKeyPressed(this::handleKey);
@@ -147,7 +186,13 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      * Request a list of current channels from the server
      */
     public void requestChannels(){
-        communicator.send("LIST");
+        Timer timer = new Timer();
+        TimerTask getChannels = new TimerTask() {
+            public void run() {
+                communicator.send("LIST");
+            }
+        };
+        timer.scheduleAtFixedRate(getChannels, 0, 5000L); // channels will be requested every 5 seconds
     }
 
     /**
@@ -159,7 +204,13 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         if (communication.contains("CHANNELS")){
             displayChannels(communication);
         } else if (communication.contains("JOIN")) {
-            logger.info("Communication: " + communication);
+            gameJoined(communication);
+        } else if (communication.contains("HOST")) {
+            hosting = true;
+        } else if (communication.contains("NICK")){
+            getNicknameList(communication);
+        } else if ((communication.contains("USERS"))) {
+            getUserList(communication);
         }
 
     }
@@ -169,7 +220,6 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      * @param channels communication message sent by the server containing all channels currently available
      */
     public void displayChannels(String channels){
-        logger.info("Displaying channels:" + channels);
         Platform.runLater(() -> {
             channelsBox.getChildren().clear(); // clear any previous channels being displayed
             String[] splitChannelNames = channels.split(" ");
@@ -182,14 +232,48 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
             // displaying every channel name
             for (String channel : channelsList){
                 Button channelNameBtn = new Button(channel);
-                channelNameBtn.getStyleClass().add("small-heading");
+                channelNameBtn.getStyleClass().add("channelItem");
                 channelsBox.getChildren().add(channelNameBtn);
                 channelNameBtn.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
                 channelNameBtn.setTextFill(Color.WHITE);
             }
-
         });
+    }
 
+    public void gameJoined(String gameInfo){
+        // channelName would be "Game: <channel name>"
+        String channelName = currentChannelName.getText() + gameInfo.split(" ")[1];
+        currentChannelName.setText(channelName);
+    }
+
+    /**
+     * Handles how to display nicknames in the chatBox
+     * @param nicknames list of nicknames
+     */
+    public void getNicknameList(String nicknames){
+        nicknameList.clear(); // clear any previous nicknames list
+        Platform.runLater(() -> {
+            String[] splitNickNames = nicknames.split(" ");
+
+            for (int i = 1; i < splitNickNames.length; i++) {
+                nicknameList.add(splitNickNames[i]);  // Add each channel name to the list
+            }
+        });
+    }
+
+    /**
+     * Handles how to display users
+     * @param users list of users in a game
+     */
+    public void getUserList(String users){
+        userList.clear(); // clear any previous user list
+        Platform.runLater(() -> {
+            String[] splitNames = users.split(" ");
+
+            for (int i = 1; i < splitNames.length; i++) {
+                userList.add(splitNames[i]);  // Add each channel name to the list
+            }
+        });
     }
 
 }
