@@ -1,3 +1,4 @@
+ac:4570
 Verstappen:2000
 Sainz:1700
 Norris:1500
@@ -7,4 +8,3 @@ Hamilton:900
 Leclerc:700
 aarya:680
 Vettel:500
-Ocon:300

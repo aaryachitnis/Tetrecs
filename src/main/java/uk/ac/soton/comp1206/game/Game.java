@@ -10,6 +10,7 @@ import uk.ac.soton.comp1206.event.GameLoopListener;
 import uk.ac.soton.comp1206.event.GameOverListener;
 import uk.ac.soton.comp1206.event.LineClearedListener;
 import uk.ac.soton.comp1206.event.NextPieceListener;
+import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.utility.Multimedia;
 
 import java.util.HashSet;
@@ -43,7 +44,7 @@ public class Game {
     /**
      * For playing sounds and background music
      */
-    private Multimedia multimedia = new Multimedia();
+    protected Multimedia multimedia = new Multimedia();
 
     /**
      * The piece that the user is interacting with
@@ -53,7 +54,9 @@ public class Game {
     /**
      * The next piece that will follow
      */
-    protected GamePiece incomingPiece = spawnPiece();
+    protected GamePiece incomingPiece;
+
+//    protected GamePiece incomingPiece = spawnPiece();
 
     /**
      * Bindable property for score
@@ -83,32 +86,32 @@ public class Game {
     /**
      * Timer object
      */
-    private Timer timer;
+    protected Timer timer;
 
     /**
      * TimerTask object
      */
-    private TimerTask timerTask;
+    protected TimerTask timerTask;
 
     /**
      * NextPieceListener field
      */
-    private NextPieceListener nextPieceListener;
+    protected NextPieceListener nextPieceListener;
 
     /**
      * LineClearedListener field
      */
-    private LineClearedListener lineClearedListener;
+    protected LineClearedListener lineClearedListener;
 
     /**
      * GameLoopListener field
      */
-    private GameLoopListener gameLoopListener;
+    protected GameLoopListener gameLoopListener;
 
     /**
      * GameOverListener field
      */
-    private GameOverListener gameOverListener;
+    protected GameOverListener gameOverListener;
 
     /**
      * Setting up listener for when the nextPiece needs to be called
@@ -255,12 +258,24 @@ public class Game {
         lives.set(newLives);
     }
 
+
+    protected Communicator communicator;
+
+    public Game(int cols, int rows) {
+        this.cols = cols;
+        this.rows = rows;
+
+        //Create a new grid model to represent the game state
+        this.grid = new Grid(cols,rows);
+    }
+
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
      * @param rows number of rows
      */
-    public Game(int cols, int rows) {
+    public Game(int cols, int rows, Communicator comm) {
+        this.communicator = comm;
         this.cols = cols;
         this.rows = rows;
 
@@ -282,7 +297,7 @@ public class Game {
      */
     public void initialiseGame() {
         logger.info("Initialising game");
-        currentPiece = spawnPiece();
+        incomingPiece = spawnPiece();
         nextPiece();
     }
 
@@ -470,14 +485,14 @@ public class Game {
      */
     public void setTimerDelay(){
         int delay = 12000 - 500 * getLevel().get();
-        logger.info("timer delay: " + delay);
+//        logger.info("timer delay: " + delay);
         // if delay is less than 2500, set timerDelay to 2500, otherwise the calculated delay
         if (delay >= 2500){
             timerDelay.set(delay);
         } else {
             timerDelay.set(2500);
         }
-        logger.info("Timer delay set");
+//        logger.info("Timer delay set");
 
         gameLoopListener.setOnGameLoop(getTimerDelay().get()); // send the timer delay to the listener
     }
@@ -495,7 +510,7 @@ public class Game {
      * Lose a life, current piece is discarded, multiplier is reset to 1 and timer is reset
      */
     public void gameLoop(){
-        logger.info("timer reached 0");
+//        logger.info("timer reached 0");
 
         // lose a life
         multimedia.playAudio("sounds/lifelose.wav"); // play life lost sound
@@ -506,14 +521,14 @@ public class Game {
         }
 
         // current piece is replaced with the incoming piece which is replaced by a new piece
-        logger.info("Discarding current piece");
+//        logger.info("Discarding current piece");
         nextPiece();
 
         // reset multiplier to 1
         setMultiplier(1);
 
         // resetting timer
-        logger.info("Resetting timer");
+//        logger.info("Resetting timer");
         startTimer(); // restart timer
     }
 
@@ -522,7 +537,7 @@ public class Game {
      */
     public void startTimer(){
         // TODO: gameLoop shouldnt be called if piece is placed, start timer after piece has been placed?
-        logger.info("timer started");
+//        logger.info("timer started");
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
@@ -538,7 +553,7 @@ public class Game {
      * Stops and purges the timer before starting it again
      */
     public void restartTimer(){
-        logger.info("restarting timer");
+//        logger.info("restarting timer");
         if (timer != null){
             timer.cancel();
             timer.purge();

@@ -2,6 +2,8 @@ package uk.ac.soton.comp1206.scene;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -10,26 +12,26 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.Leaderboard;
-import uk.ac.soton.comp1206.component.PieceBoard;
 import uk.ac.soton.comp1206.event.CommunicationsListener;
+import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.MultiplayerGame;
 import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
-import uk.ac.soton.comp1206.utility.Multimedia;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MultiplayerScene extends ChallengeScene implements CommunicationsListener{
+public class MultiplayerScene extends ChallengeScene{
     private static final Logger logger = LogManager.getLogger(MultiplayerScene.class);
 
     /**
      * Handles the logic of the game
      */
-//    protected MultiplayerGame game;
+    protected MultiplayerGame multiGame;
 
     protected Leaderboard leaderboard;
 
@@ -39,7 +41,7 @@ public class MultiplayerScene extends ChallengeScene implements CommunicationsLi
     protected Text multiplayerTitle = new Text("Multiplayer");
 
     /**
-     * To communicate with the server
+     * To send messages to the server
      */
     protected Communicator communicator = gameWindow.getCommunicator();
 
@@ -54,6 +56,7 @@ public class MultiplayerScene extends ChallengeScene implements CommunicationsLi
      */
     public MultiplayerScene(GameWindow gameWindow) {
         super(gameWindow);
+//        communicator.addListener(this::receiveCommunication);
         logger.info("Creating Multiplayer Scene");
     }
 
@@ -74,7 +77,7 @@ public class MultiplayerScene extends ChallengeScene implements CommunicationsLi
         var mainPane = new BorderPane();
         challengePane.getChildren().add(mainPane);
 
-        board = new GameBoard(game.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
+        board = new GameBoard(multiGame.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
         mainPane.setCenter(board);
 
         // Play background music
@@ -85,14 +88,14 @@ public class MultiplayerScene extends ChallengeScene implements CommunicationsLi
 
         // displaying score
         scoreText = new Text(); // stores the score
-        scoreText.textProperty().bind(game.getScore().asString()); // binding to the score IntegerProperty
+        scoreText.textProperty().bind(multiGame.getScore().asString()); // binding to the score IntegerProperty
         HBox scoreBox = new HBox(scoreLabel, scoreText); // Horizontal box for the label and text
         scoreLabel.getStyleClass().add("score"); // styling score label
         scoreText.getStyleClass().add("score"); // styling score text
 
         // displaying lives
         livesText = new Text(); // stores the number of remaining lives
-        livesText.textProperty().bind(game.getLives().asString()); // binding to the lives IntegerProperty
+        livesText.textProperty().bind(multiGame.getLives().asString()); // binding to the lives IntegerProperty
         HBox livesBox = new HBox(livesLabel, livesText); // Horizontal box for the label and text
         livesLabel.getStyleClass().add("lives"); // Styling label
         livesText.getStyleClass().add("lives"); // Styling text
@@ -128,9 +131,9 @@ public class MultiplayerScene extends ChallengeScene implements CommunicationsLi
         // Set the time bar at the bottom of the pane
         mainPane.setBottom(timeBar);
 
-        game.setGameLoopListener((e) -> {
+        multiGame.setGameLoopListener((e) -> {
             Platform.runLater(() ->
-                    timeBar(game.getTimerDelay().get()));
+                    timeBar(multiGame.getTimerDelay().get()));
         });
 
         // rotate piece right if currentPieceBoard is left-clicked
@@ -143,29 +146,123 @@ public class MultiplayerScene extends ChallengeScene implements CommunicationsLi
 
     @Override
     public void initialise() {
-        super.initialise();
-        communicator.addListener(this::receiveCommunication);
-        requestPlayersInfo(); // to request player info
+        multiGame.start();
+        scene.setOnKeyPressed(this::handleKey);
+        multiGame.requestPlayersInfo(); // to request player info
     }
 
-    public void requestPlayersInfo(){
-        TimerTask getPlayerInfo = new TimerTask() {
-            public void run() {
-                communicator.send("SCORES");
-            }
-        };
-        timer.scheduleAtFixedRate(getPlayerInfo, 0, 2000L); // channels will be requested every 2 seconds
+    @Override
+    public void setupGame(){
+        logger.info("Starting a new multiplayer challenge");
+
+        //Start new game
+        multiGame = new MultiplayerGame(5, 5, communicator);
+
+        // listeners
+        multiGame.setNextPieceListener(this::nextPiece);
+        multiGame.setLineClearedListener(this::lineCleared);
+        multiGame.setGameLoopListener(this::timeBar);
+        multiGame.setGameOverListener(this::gameOver);
     }
 
-    public void receiveCommunication(String communication){
-        if (communication.contains("SCORES")){
-            updatePlayersInfo(communication);
+    /**
+     * Handle when a block is clicked
+     * @param gameBlock the Game Block that was clocked
+     */
+    @Override
+    protected void blockClicked(GameBlock gameBlock) {
+        multiGame.blockClicked(gameBlock);
+    }
+
+    /**
+     * Rotate the current gamepiece and display it on the currentPieceBoard
+     * @param left = true if piece needs to be rotated left
+     */
+    @Override
+    public void rotatePiece(boolean left){
+        multimedia.playAudio("sounds/rotate.wav");
+        multiGame.rotateCurrentPiece(left);
+        currentPieceBoard.showPiece(multiGame.getCurrentPiece());
+    }
+
+    /**
+     * Swaps current piece and incoming piece
+     */
+    @Override
+    public void swapPieces(){
+        multimedia.playAudio("sounds/rotate.wav");
+        multiGame.swapCurrentPiece();
+        currentPieceBoard.showPiece(multiGame.getCurrentPiece());
+        incomingPieceBoard.showPiece(multiGame.getIncomingPiece());
+    }
+
+    /**
+     * Handles what happens when a key is pressed
+     * @param event the event of pressing the escape key
+     */
+    @Override
+    public void handleKey(KeyEvent event){
+
+        // for exiting challenge scene and going back to the menu scene
+        if (event.getCode() == KeyCode.ESCAPE){ // escape key pressed
+            logger.info("Escape pressed, going to menu scene");
+            multimedia.stopBgMusic(); // stop background music
+            multiGame.stopTimer(); // stops timer
+            gameWindow.cleanup(); // clean up the window before going back to the menu scene
+            gameWindow.startMenu();
+        }
+
+        // for swapping current and incoming piece
+        if ( (event.getCode() == KeyCode.SPACE) || (event.getCode() == KeyCode.X) ){
+            logger.info("Swapping piece");
+            swapPieces();
+        }
+
+        // for rotating the current piece right
+        if ( (event.getCode() == KeyCode.Q) || (event.getCode() == KeyCode.Z) || (event.getCode() == KeyCode.OPEN_BRACKET)){
+            logger.info("Rotating piece to the right");
+            rotatePiece(false);
+        }
+
+        // for rotating the current piece left
+        if ( (event.getCode() == KeyCode.E) || (event.getCode() == KeyCode.C) || (event.getCode() == KeyCode.CLOSE_BRACKET)){
+            logger.info("Rotating piece to the left");
+            rotatePiece(true);
+        }
+
+        // for dropping a piece on the board
+        if ( (event.getCode() == KeyCode.ENTER) || (event.getCode() == KeyCode.X)){
+            logger.info("Dropping piece");
+            blockSelected(selectedCol, selectedRow);
+        }
+
+        // cursor
+        if ( (event.getCode() == KeyCode.UP) || (event.getCode() == KeyCode.W) ){
+            // move up
+            moveBlock(-1, 0);
+        } else if ((event.getCode() == KeyCode.RIGHT) || (event.getCode() == KeyCode.D)) {
+            // move right
+            moveBlock(0, 1);
+        } else if ( (event.getCode() == KeyCode.LEFT) || (event.getCode() == KeyCode.A) ) {
+            // move left
+            moveBlock(0, -1);
+        } else if ( (event.getCode() == KeyCode.DOWN) || (event.getCode() == KeyCode.S) ) {
+            // move down
+            moveBlock(1, 0);
         }
     }
 
-    public void updatePlayersInfo(String playersInfo){
-        logger.info("Players info: " + playersInfo);
+    /**
+     * Call the ScoresScene when lives remaining reach 0 and game is over
+     */
+    @Override
+    public void gameOver(){
+        // go to the Scores Scene
+        Platform.runLater(() -> {
+            multimedia.stopBgMusic(); // stop bg music
+            multimedia.playAudio("sounds/transition.wav"); // transition to score scene
+            multiGame.stopTimer(); // stop timer
+            gameWindow.showScoreScene(multiGame);
+        });
     }
-
-
 }

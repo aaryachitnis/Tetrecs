@@ -364,7 +364,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      * @param rowOffset number of places to move on the y-axis
      * @param colOffset number of places to move on the x-axis
      */
-    private void moveBlock(int rowOffset, int colOffset) {
+    public void moveBlock(int rowOffset, int colOffset) {
         int newRow = selectedRow + rowOffset;
         int newCol = selectedCol + colOffset;
 
@@ -382,7 +382,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      * @param selectedCol column number of the block currently selected
      * @param selectedRow row number of the block currently selected
      */
-    private void blockSelected(int selectedCol, int selectedRow){
+    public void blockSelected(int selectedCol, int selectedRow){
         logger.info("Dropping piece at the selected block");
         game.blockClicked(board.getBlock(selectedCol, selectedRow)); // playing piece at block selected using keys
     }
@@ -456,5 +456,4 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         }
         return "";
     }
-
 }
