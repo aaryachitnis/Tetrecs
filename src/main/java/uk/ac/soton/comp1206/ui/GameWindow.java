@@ -111,6 +111,13 @@ public class GameWindow {
     }
 
     /**
+     * Display multiplayer game scene
+     */
+    public void showMultiplayerScene(){
+        loadScene(new MultiplayerScene(this));
+    }
+
+    /**
      * Setup the default settings for the stage itself (the window), such as the title and minimum width and height.
      */
     public void setupStage() {

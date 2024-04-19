@@ -11,7 +11,7 @@ import uk.ac.soton.comp1206.scene.MenuScene;
  */
 public class Multimedia {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(Multimedia.class);
 
     /**
      * MediaPlayer object for handling audio

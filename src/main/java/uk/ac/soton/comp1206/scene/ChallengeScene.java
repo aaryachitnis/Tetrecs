@@ -43,57 +43,57 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     /**
      * Storing the value of score
      */
-    public Text scoreText = new Text();
+    protected Text scoreText = new Text();
 
     /**
      * Storing the value of level
      */
-    public Text levelText = new Text();
+    protected Text levelText = new Text();
 
     /**
      * Storing the value of remaining lives
      */
-    public Text livesText = new Text();
+    protected Text livesText = new Text();
 
     /**
      * Storing the value of the current local high score
      */
-    public Text highScoreText = new Text();
+    protected Text highScoreText = new Text();
 
     /**
      * Label for score
      */
-    public Text scoreLabel = new Text("Score: ");
+    protected Text scoreLabel = new Text("Score: ");
 
     /**
      * Label for level
      */
-    public Text levelLabel = new Text("Level: ");
+    protected Text levelLabel = new Text("Level: ");
 
     /**
      * Label for lives
      */
-    public Text livesLabel = new Text("Lives: ");
+    protected Text livesLabel = new Text("Lives: ");
 
     /**
      * Label for high score
      */
-    public Text highScoreLabel = new Text("High Score:");
+    protected Text highScoreLabel = new Text("High Score:");
 
     /**
      * Label for incoming pieces
      */
-    public Text incomingPiecesLabel = new Text("Incoming:");
+    protected Text incomingPiecesLabel = new Text("Incoming:");
 
     /**
      * Title of the scene
      */
-    public Text title = new Text("Single Player");
+    protected Text title = new Text("Single Player");
 
     /**
      * For sound effects
      */
-    private Multimedia multimedia = new Multimedia();
+    protected Multimedia multimedia = new Multimedia();
 
     /**
      * Main gameboard where pieces will be placed
@@ -103,22 +103,22 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     /**
      * PieceBoard for the current game piece
      */
-    private PieceBoard currentPieceBoard = new PieceBoard(180,180);
+    protected PieceBoard currentPieceBoard = new PieceBoard(180,180);
 
     /**
      * PieceBoard for the incoming game piece
      */
-    private PieceBoard incomingPieceBoard = new PieceBoard(100,100);
+    protected PieceBoard incomingPieceBoard = new PieceBoard(100,100);
 
     /**
      * y-coordinate of the selected block
      */
-    private int selectedRow = 0;
+    protected int selectedRow = 0;
 
     /**
      * x-coordinate of the selected block
      */
-    private int selectedCol = 0;
+    protected int selectedCol = 0;
 
     /**
      * Time bar to show how much time is remaining
@@ -242,7 +242,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      * Handle when a block is clicked
      * @param gameBlock the Game Block that was clocked
      */
-    private void blockClicked(GameBlock gameBlock) {
+    protected void blockClicked(GameBlock gameBlock) {
         game.blockClicked(gameBlock);
     }
 

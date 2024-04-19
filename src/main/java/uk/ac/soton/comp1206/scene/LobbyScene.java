@@ -71,6 +71,11 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     protected TextField messageTextField = new TextField();
 
     /**
+     * Button for users to host a game
+     */
+    protected Button hostNewGamesBtn = new Button("Host Game");
+
+    /**
      * Start game button for users that are hosts of the game
      */
     protected Button startGameBtn = new Button("Start game");
@@ -115,6 +120,10 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      */
     ArrayList<String> userList = new ArrayList<>();
 
+    /**
+     * Whether the user is in a channel or not
+     * Bindable property so that the visibility of the rightBox containing all channel info can be dynamically changed
+     */
     BooleanProperty hasJoinedGameProperty = new SimpleBooleanProperty(false);
 
     /**
@@ -122,6 +131,11 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      * Bindable property so that the visibility of the button can be dynamically changed
      */
     BooleanProperty isHostProperty = new SimpleBooleanProperty(false);
+
+    /**
+     * Timer to ask for channels every 2 seconds
+     */
+    Timer timer = new Timer();
 
     /**
      * Create a new Lobby scene for multiplayer games
@@ -162,7 +176,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         leftBox.getChildren().add(channelsBox);
 
         // right box
-        rightBox.visibleProperty().bind(hasJoinedGameProperty);
+        rightBox.visibleProperty().bind(hasJoinedGameProperty); // binding to whether a game has been joined
         mainPane.setRight(rightBox);
         rightBox.getChildren().add(currentChannelName);
         currentChannelName.getStyleClass().add("heading");
@@ -194,7 +208,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         chatBoxBtnsBox.getChildren().add(startGameBtn);
 
         startGameBtn.setOnAction(actionEvent -> {
-            // TODO: start the multiplayer game
+            communicator.send("START");
         });
 
         // Leave button in the chatBox
@@ -220,7 +234,6 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         mainPane.setTop(title);
 
         // Host new games button
-        var hostNewGamesBtn = new Button("Host new game");
         hostGameBox.getChildren().addAll(hostNewGamesBtn);
         hostNewGamesBtn.getStyleClass().add("small-heading");
         // button styling
@@ -229,6 +242,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
 
         // Displaying text field when hostNewGamesBtn is clicked
         hostNewGamesBtn.setOnAction(event -> {
+            hostNewGamesBtn.setDisable(true);
             TextField channelNameTextField = new TextField();
             hostGameBox.getChildren().add(channelNameTextField);
 
@@ -275,13 +289,12 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      * Request a list of current channels from the server
      */
     public void requestChannels(){
-        Timer timer = new Timer();
         TimerTask getChannels = new TimerTask() {
             public void run() {
                 communicator.send("LIST");
             }
         };
-        timer.scheduleAtFixedRate(getChannels, 0, 5000L); // channels will be requested every 5 seconds
+        timer.scheduleAtFixedRate(getChannels, 0, 2000L); // channels will be requested every 2 seconds
     }
 
     /**
@@ -306,8 +319,14 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
             messages(communication);
         } else if (communication.contains("ERROR")) {
             handleError(communication);
+        } else if (communication.contains("START")) {
+            Platform.runLater(() -> {
+                logger.info("Starting game...");
+                timer.purge();
+                timer.cancel(); // stops requesting for channels
+                gameWindow.showMultiplayerScene();
+            });
         }
-
     }
 
     /**
@@ -386,13 +405,14 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
      */
     public void leaveChannel(){
         // The channel is already removed from the server by this point
-        // just need to clear everything
+        // just need to clear and reset everything
         currentChannelName.setText("Game: ");
         playerNames.setText("Players: ");
         messages.setText("");
         userList.clear();
-        isHostProperty.set(false);
-        hasJoinedGameProperty.set(false);
+        isHostProperty.set(false); // remove the start game button
+        hasJoinedGameProperty.set(false); // remove the right box containing all the channel info
+        hostNewGamesBtn.setDisable(false);
     }
 
     /**

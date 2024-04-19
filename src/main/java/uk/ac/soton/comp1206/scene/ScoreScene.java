@@ -106,12 +106,10 @@ public class ScoreScene extends BaseScene{
         gameOverTitle.getStyleClass().add("bigtitle");
         highScoreTitle.getStyleClass().add("title");
         gameOverTitle.setTranslateX(200);
-//        highScoreTitle.setTranslateX(300);
 
         VBox titlesTopPane = new VBox(20);
         titlesTopPane.getChildren().add(title);
         titlesTopPane.getChildren().add(gameOverTitle);
-//        titlesTopPane.getChildren().add(highScoreTitle);
         mainPane.setTop(titlesTopPane);
 
         loadScores(); // populate the scoresArrayList
@@ -122,7 +120,6 @@ public class ScoreScene extends BaseScene{
 
         VBox highScoreList = new VBox(highScoreTitle, scoresList);
         VBox centerBox = new VBox();
-//        centerBox.setTranslateX(250);
         mainPane.setCenter(centerBox);
 
         logger.info("Score was: " + newScore + ". Checking if new high score was set..");
@@ -161,8 +158,7 @@ public class ScoreScene extends BaseScene{
     }
 
     public void initialise(){
-        // add keyboard support here
-        scene.setOnKeyPressed(this::handleKey);
+        scene.setOnKeyPressed(this::handleKey); // handle key being pressed
     }
 
     /**
@@ -219,9 +215,6 @@ public class ScoreScene extends BaseScene{
      * Write the contents of the scoresArrayList to the file
      */
     public void writeScores(){
-        // sort the arraylist in descending order
-//        scoresArrayList.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
-
         logger.info("Writing new high score to file..");
         File localScoresFile = new File("localScores.txt");
         try {
@@ -245,7 +238,6 @@ public class ScoreScene extends BaseScene{
      * @return return true if new high score was set
      */
     public boolean checkNewHighScore(){
-//        logger.info("in checkNewHighScore method");
         for (Pair<String, Integer> pair : scoresArrayList) {
             if (newScore > pair.getValue()) {
                 logger.info("New high score was set");
