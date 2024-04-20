@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -16,6 +17,8 @@ import uk.ac.soton.comp1206.App;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 import uk.ac.soton.comp1206.utility.Multimedia;
+
+import javafx.util.Duration;
 
 /**
  * The main menu of the game. Provides a gateway to the rest of the game.
@@ -62,13 +65,25 @@ public class MenuScene extends BaseScene {
         // Title
         Image titleImage = new Image(getClass().getResource("/images/TetrECS.png").toExternalForm());
         ImageView titleImageView = new ImageView(titleImage);
-        titleImageView.setFitHeight(400); // Set the height
-        titleImageView.setFitWidth(400); // Set the width
+        titleImageView.setFitHeight(700); // Set the height
+        titleImageView.setFitWidth(600); // Set the width
         titleImageView.setPreserveRatio(true); // Preserve aspect ratio
         HBox title = new HBox(titleImageView); // Box with the image view
         title.setAlignment(Pos.CENTER);
-        // TODO: add animation for the title
 
+        // Animating the title
+        Timeline timeline = new Timeline(); // create a Timeline for the animation
+        // Define the key frames for moving the image up and down
+        KeyValue keyValueUp = new KeyValue(titleImageView.translateYProperty(), -70); // Define key frame for moving the image up
+        KeyValue keyValueDown = new KeyValue(titleImageView.translateYProperty(), 0); // Define key frame for moving the image down
+        // Creating the key frames
+        KeyFrame keyFrameUp = new KeyFrame(Duration.seconds(3), keyValueUp);
+        KeyFrame keyFrameDown = new KeyFrame(Duration.seconds(3), keyValueDown);
+        timeline.getKeyFrames().addAll(keyFrameUp, keyFrameDown); // Adding key frames to the timeline
+        timeline.setCycleCount(Timeline.INDEFINITE); // to repeat animation indefinitely
+        timeline.setAutoReverse(true); // reversing the animation to make it look like its "bouncing"
+        timeline.play();
+        
         // Box to hold all the menu items
         VBox menu = new VBox();
         menu.setAlignment(Pos.CENTER);
@@ -81,7 +96,6 @@ public class MenuScene extends BaseScene {
         singlePlayerBtn.setOnAction(this::startSinglePlayerGame);
         // set the border and background of button to transparent and the text colour to white
         singlePlayerBtn.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-        singlePlayerBtn.setTextFill(Color.WHITE);
 
         // Multiplayer Button
         var multiplayerBtn = new Button("Multi Player");
@@ -91,7 +105,6 @@ public class MenuScene extends BaseScene {
         multiplayerBtn.setOnAction(this::startMultiplayerGame);
         // set the border and background of button to transparent and the text colour to white
         multiplayerBtn.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-        multiplayerBtn.setTextFill(Color.WHITE);
 
         // Instructions Button
         var instructionsBtn = new Button("How to play");
@@ -101,7 +114,6 @@ public class MenuScene extends BaseScene {
         instructionsBtn.setOnAction(this::displayInstructions);
         // set the border and background of button to transparent and the text colour to white
         instructionsBtn.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-        instructionsBtn.setTextFill(Color.WHITE);
 
         // Exit Button
         var exitBtn = new Button("Exit");
@@ -111,7 +123,6 @@ public class MenuScene extends BaseScene {
         exitBtn.setOnAction(this::exit);
         // set the border and background of button to transparent and the text colour to white
         exitBtn.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-        exitBtn.setTextFill(Color.WHITE);
 
         // Formatting and displaying title and menu
         VBox titleAndMenu = new VBox(50);

@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -111,6 +112,18 @@ public class GameBlock extends Canvas {
         //Do an initial paint
         paint();
 
+        //When the mouse is over the block, hover
+        setOnMouseEntered((e) -> {
+            setHoverOn(true);
+            paint();
+        });
+
+        //When the mouse leaves, no longer hover
+        setOnMouseExited((e) -> {
+            setHoverOn(false);
+            paint();
+        });
+
         //When the value property is updated, call the internal updateValue method
         value.addListener(this::updateValue);
     }
@@ -182,6 +195,17 @@ public class GameBlock extends Canvas {
         //Colour fill
         gc.setFill(colour);
         gc.fillRect(0,0, width, height);
+
+        // To have more of a vignette effect on each block
+        // Values passed in constructor like: centerX, centerY, radius, focus angle, focus distance
+        RadialGradient gradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.TRANSPARENT), // the black colour is transparent at the centre
+                new Stop(1, Color.rgb(0, 0, 0, 0.5)) // black colour at 50% opacity at the border
+        );
+
+        gc.setFill(gradient);
+        gc.fillRect(0, 0, width, height);
+
 
         //Border
         gc.setStroke(Color.BLACK);
@@ -257,7 +281,7 @@ public class GameBlock extends Canvas {
                 }
 
                 // opacity is decremented by 0.06 until it reaches 0 so that it fades out more each time handle() is called
-                double temp = opacity - 0.06;
+                double temp = opacity - 0.05;
                 if (temp<0){
                     opacity = 0;
                 } else {

@@ -46,6 +46,7 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
     public void initialiseGame() {
         logger.info("Initialising game");
         communicator.send("PIECE");
+        requestPlayersInfo();
     }
 
     @Override
@@ -77,7 +78,6 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
             // get the value of piece, convert it to string and set it as the nextPieceValue
             int value = Integer.parseInt(communication.split(" ")[1]);
             setNextPieceValue(value);
-//            pieceQueue.add(value);
         } else if (communication.contains("SCORES")){
             updatePlayersInfo(communication);
         }

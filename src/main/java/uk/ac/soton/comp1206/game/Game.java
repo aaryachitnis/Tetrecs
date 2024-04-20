@@ -510,8 +510,6 @@ public class Game {
      * Lose a life, current piece is discarded, multiplier is reset to 1 and timer is reset
      */
     public void gameLoop(){
-//        logger.info("timer reached 0");
-
         // lose a life
         multimedia.playAudio("sounds/lifelose.wav"); // play life lost sound
         setLives(getLives().get()-1);
@@ -521,14 +519,12 @@ public class Game {
         }
 
         // current piece is replaced with the incoming piece which is replaced by a new piece
-//        logger.info("Discarding current piece");
         nextPiece();
 
         // reset multiplier to 1
         setMultiplier(1);
 
         // resetting timer
-//        logger.info("Resetting timer");
         startTimer(); // restart timer
     }
 

@@ -148,7 +148,6 @@ public class MultiplayerScene extends ChallengeScene{
     public void initialise() {
         multiGame.start();
         scene.setOnKeyPressed(this::handleKey);
-        multiGame.requestPlayersInfo(); // to request player info
     }
 
     @Override

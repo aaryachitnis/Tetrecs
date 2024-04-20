@@ -41,7 +41,7 @@
 }
 
 .menuItem {
-    -fx-fill: white;
+    -fx-text-fill: white;
     -fx-font-family: 'Orbitron';
     -fx-font-size: 32px;
     -fx-font-weight: 700;
@@ -51,7 +51,7 @@
 }
 
 .menuItem:hover {
-    -fx-fill: yellow;
+    -fx-text-fill: yellow;
 }
 
 .menuItem.selected {
