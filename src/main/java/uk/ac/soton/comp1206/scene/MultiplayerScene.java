@@ -207,6 +207,7 @@ public class MultiplayerScene extends ChallengeScene{
         if (event.getCode() == KeyCode.ESCAPE){ // escape key pressed
             logger.info("Escape pressed, going to menu scene");
             multimedia.stopBgMusic(); // stop background music
+            communicator.send("PART"); // Leaves the channel
             multiGame.stopTimer(); // stops timer
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();

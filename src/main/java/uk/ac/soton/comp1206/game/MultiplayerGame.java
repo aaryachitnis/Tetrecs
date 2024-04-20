@@ -13,19 +13,9 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
 
     private static final Logger logger = LogManager.getLogger(MultiplayerGame.class);
 
+    protected boolean piecesNotInitialised = true;
+
     protected int nextPieceValue;
-//    private Queue<Integer> pieceQueue = new LinkedList<>();
-    public void setNextPieceValue(int value){
-        nextPieceValue = value;
-    }
-
-    public int getNextPieceValue(){
-        return nextPieceValue;
-    }
-
-//    public void addToPieceQueue(int value){
-//        pieceQueue.add(value);
-//    }
 
     /**
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
@@ -37,26 +27,39 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
         communicator.addListener(this::receiveCommunication);
     }
 
+    public void setNextPieceValue(int value){
+        nextPieceValue = value;
+
+        if (piecesNotInitialised){
+            logger.info("First piece being initialised");
+            piecesNotInitialised = false;
+            incomingPiece = spawnPiece();
+            nextPiece();
+        }
+    }
+
+    public int getNextPieceValue(){
+        return nextPieceValue;
+    }
+
     @Override
     public void initialiseGame() {
         logger.info("Initialising game");
         communicator.send("PIECE");
-        incomingPiece = spawnPiece();
-        nextPiece();
     }
 
     @Override
     public void nextPiece(){
         logger.info("Next piece generated");
         setCurrentPiece(incomingPiece);
+        communicator.send("PIECE");
         incomingPiece = spawnPiece();
         nextPieceListener.nextPiece(currentPiece, incomingPiece);
     }
 
     @Override
     public GamePiece spawnPiece(){
-        communicator.send("PIECE");
-        logger.info("Piece value: " + getNextPieceValue());
+        logger.info("Spawning piece of value: " + getNextPieceValue());
         return GamePiece.createPiece(getNextPieceValue());
     }
 
@@ -73,7 +76,6 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
         if (communication.contains("PIECE")){
             // get the value of piece, convert it to string and set it as the nextPieceValue
             int value = Integer.parseInt(communication.split(" ")[1]);
-            logger.info("Value of piece is: "+ value);
             setNextPieceValue(value);
 //            pieceQueue.add(value);
         } else if (communication.contains("SCORES")){
