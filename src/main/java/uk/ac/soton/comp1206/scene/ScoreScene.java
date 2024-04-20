@@ -2,6 +2,7 @@ package uk.ac.soton.comp1206.scene;
 
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -19,7 +20,9 @@ import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.ScoresList;
+import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.game.Game;
+import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -31,21 +34,39 @@ import java.util.Comparator;
 /**
  * Scores scene. Holds the high scores and is displayed after a Single Player game ends
  */
-public class ScoreScene extends BaseScene{
+public class ScoreScene extends BaseScene implements CommunicationsListener {
 
     private static final Logger logger = LogManager.getLogger(ScoreScene.class);
 
     /**
-     * High Score sub-title
+     * High Score heading
      */
-    private Text highScoreTitle = new Text("High Score");
-
-    private Text gameOverTitle = new Text("Game Over");
+    private final Text highScoreTitle = new Text("High Scores");
 
     /**
-     * ArrayList containing name and score
+     * Online Score sub-heading
+     */
+    private final Text onlineHighScoreTitle = new Text("Online Scores");
+
+    /**
+     * Local Score sub-heading
+     */
+    private final Text localHighScoreTitle = new Text("Remote Scores");
+
+    /**
+     * Game over text
+     */
+    private final Text gameOverTitle = new Text("Game Over");
+
+    /**
+     * ArrayList containing local names and scores
      */
     protected ArrayList<Pair<String, Integer>> scoresArrayList = new ArrayList<>() {};
+
+    /**
+     * ArrayList containing names and scores from the server
+     */
+    private final ObservableList<Pair<String, Integer>> remoteScoresArrayList = FXCollections.observableArrayList();
 
     /**
      * Wrapping the ArrayList scoresArrayList which contains the name and score in SimpleListProperty
@@ -53,9 +74,20 @@ public class ScoreScene extends BaseScene{
     protected final SimpleListProperty<Pair<String, Integer>> localScores = new SimpleListProperty<>(FXCollections.observableArrayList(scoresArrayList));
 
     /**
-     * Holds and displays a list of names and associated scores
+     * Bindable property of remote scores
+     */
+    private SimpleListProperty<Pair<String, Integer>> remoteScores ;
+
+
+    /**
+     * Holds and displays a list of names and associated scores from the localScores.txt file
      */
     protected ScoresList scoresList = new ScoresList();
+
+    /**
+     * Holds and displays a list of names and associated scores that are sent by the server
+     */
+    protected ScoresList remoteScoresList = new ScoresList();
 
     /**
      * To get the state of the previous game
@@ -68,14 +100,19 @@ public class ScoreScene extends BaseScene{
     protected int newScore;
 
     /**
+     * To communicate with the server
+     */
+    protected Communicator communicator;
+
+    /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
-     *
      * @param gameWindow the game window
      */
     public ScoreScene(GameWindow gameWindow, Game g) {
         super(gameWindow);
         game = g;
         newScore = game.getScore().get();
+        communicator = gameWindow.getCommunicator();
         logger.info("Creating score scene");
     }
 
@@ -93,6 +130,10 @@ public class ScoreScene extends BaseScene{
         var mainPane = new BorderPane();
         scoresPane.getChildren().add(mainPane);
 
+        // setting up the communicator listener to receive messages
+        communicator.addListener(this::receiveCommunication);
+        communicator.send("HISCORES"); // asking for online high scores
+
         // TetrECS image
         Image titleImage = new Image(getClass().getResource("/images/TetrECS.png").toExternalForm());
         ImageView titleImageView = new ImageView(titleImage);
@@ -105,6 +146,8 @@ public class ScoreScene extends BaseScene{
         // Game over and high score headings
         gameOverTitle.getStyleClass().add("bigtitle");
         highScoreTitle.getStyleClass().add("title");
+        localHighScoreTitle.getStyleClass().add("heading");
+        onlineHighScoreTitle.getStyleClass().add("heading");
         gameOverTitle.setTranslateX(200);
 
         VBox titlesTopPane = new VBox(20);
@@ -112,49 +155,58 @@ public class ScoreScene extends BaseScene{
         titlesTopPane.getChildren().add(gameOverTitle);
         mainPane.setTop(titlesTopPane);
 
-        loadScores(); // populate the scoresArrayList
+        loadScores(); // populate the scoresArrayList to update localScores
         logger.info("Scores have been loaded");
 
         // binding the ScoresList scores to the ScoresScene scores list
         scoresList.getScoresListProperty().bind(localScores);
+        remoteScoresList.getScoresListProperty().bind(remoteScores);
 
-        VBox highScoreList = new VBox(highScoreTitle, scoresList);
+        VBox localHighScoreList = new VBox(localHighScoreTitle, scoresList);
+        VBox remoteHighscoreList = new VBox(onlineHighScoreTitle, remoteScoresList);
+        HBox scoresListBox = new HBox(150);
+        scoresListBox.getChildren().add(localHighScoreList);
+        scoresListBox.getChildren().add(remoteHighscoreList);
+        scoresListBox.setTranslateX(100);
+        highScoreTitle.setTranslateX(300);
+        VBox scoresBox = new VBox(highScoreTitle, scoresListBox);
         VBox centerBox = new VBox();
         mainPane.setCenter(centerBox);
 
         logger.info("Score was: " + newScore + ". Checking if new high score was set..");
         if (checkNewHighScore()){ // checking if the new score was higher than any scores in the list
-            logger.info("Prompting user to enter name");
             Text highScoreSetMsg = new Text("You set a new high score!");
             highScoreSetMsg.getStyleClass().add("high-score-set-msg");
+
             Text namePrompt = new Text("Enter your name");
             namePrompt.getStyleClass().add("title");
-            TextField nameTextField = new TextField();
-            Button submitButton = new Button("Submit");
-            // TODO: style the submit button
 
-            VBox nameBox = new VBox(highScoreSetMsg, namePrompt, nameTextField, submitButton);
+            TextField nameTextField = new TextField();
+            nameTextField.setPrefWidth(200); // Set the preferred width to 200 pixels
+
+            VBox nameBox = new VBox(highScoreSetMsg, namePrompt, nameTextField);
             centerBox.getChildren().add(nameBox);
 
-            submitButton.setOnAction(event -> {
+
+            nameTextField.setOnAction(event -> {
                 String playerName = nameTextField.getText(); // Save the entered name to the variable
                 logger.info("Name submitted: " + playerName);
                 centerBox.getChildren().remove(nameBox);
-                centerBox.getChildren().add(highScoreList);
-                newHighScoreSet(playerName);
+                centerBox.getChildren().add(scoresBox);
+                newHighScoreSet(playerName); // write new high score to localScores.txt
+                writeOnlineScore(playerName); // send high score to server
                 loadScores();
                 scoresList.reveal(); // displaying the scores
-
+                remoteScoresList.reveal();
             });
         }
 
         if (!checkNewHighScore()){ // if there is no new high score, display the high score list directly
             localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
-            centerBox.getChildren().add(highScoreList);
+            centerBox.getChildren().add(scoresBox);
             scoresList.reveal(); // displaying the scores
+            remoteScoresList.reveal();
         }
-
-
     }
 
     public void initialise(){
@@ -188,8 +240,7 @@ public class ScoreScene extends BaseScene{
                 logger.info("Created and populated file");
             }
 
-            // Reading from the file
-            logger.info("Attempting to read..");
+            // Reading from the file for populating the scoresArrayList
             BufferedReader fileReader = new BufferedReader(new FileReader(localScoresFile));
             String line;
             while ((line = fileReader.readLine()) != null){
@@ -197,12 +248,9 @@ public class ScoreScene extends BaseScene{
                 String name = parts[0];
                 String scoreString = parts[1];
                 Integer score = Integer.parseInt(scoreString); // convert score from string to int
-                // TODO: do i update the scoresArrayList or the SimpleListProperty??
                 scoresArrayList.add(new Pair<>(name, score)); // populate scoresArrayList
                 localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
-                logger.info("updated arraylist");
             }
-            logger.info("Populated scoresArrayList");
             fileReader.close();
 
         } catch (IOException e) {
@@ -215,7 +263,6 @@ public class ScoreScene extends BaseScene{
      * Write the contents of the scoresArrayList to the file
      */
     public void writeScores(){
-        logger.info("Writing new high score to file..");
         File localScoresFile = new File("localScores.txt");
         try {
             FileWriter writer = new FileWriter(localScoresFile);
@@ -244,7 +291,6 @@ public class ScoreScene extends BaseScene{
                 return true; // Return true if there is a new high score
             }
         }
-        logger.info("No new high score");
         return false; // Return false if there is no new high score
     }
 
@@ -254,22 +300,62 @@ public class ScoreScene extends BaseScene{
      */
     public void newHighScoreSet(String name){
         logger.info("updating scoresArrayList after a new high score was set");
+
+        // remove the last element so that there's only 10 elements in the list
+        logger.info("scoresArrayList size: " + scoresArrayList.size());
+        scoresArrayList.remove(9);
+
         // add their name and score to the list
         scoresArrayList.add(new Pair<>(name, newScore));
 
         // sort the arraylist in descending order
         scoresArrayList.sort((p1, p2) -> p2.getValue().compareTo(p1.getValue()));
 
-        // remove the last element so that there's only 10 elements in the list
-        scoresArrayList.remove(10);
-
         // call writeScores() so that the localScores.txt file can be updated
         writeScores();
     }
 
+    /**
+     * Populate the remoteScores using the communication received from server
+     */
+    public void loadOnlineScores(String[] hiscores){
+        for (String hiscore : hiscores){
+            String[] hiscoreParts = hiscore.split(":");
+            String name = hiscoreParts[0];
+            Integer score = Integer.parseInt(hiscoreParts[1]);
+            remoteScoresArrayList.add(new Pair<>(name, score)); // populate scoresArrayList
+        }
+        remoteScores = new SimpleListProperty<>(remoteScoresArrayList);
+        logger.info("remoteScoresArrayList size: " + remoteScoresArrayList.size());
+        logger.info("remoteScores size: " + remoteScores.size());
+    }
+
+    /**
+     * Submit the high score to the server
+     */
+    public void writeOnlineScore(String playerName){
+        communicator.send("HISCORE " + playerName + ":" + newScore);
+    }
+
+    /**
+     * For receiving remote scores
+     * @param communication the message that was received
+     */
+    public void receiveCommunication(String communication){
+        if (communication.contains("HISCORES")){
+            String temp = communication.split(" ")[1];
+            String[] hiscores = temp.split("\n");
+            loadOnlineScores(hiscores);
+        }
+    }
+
+    /**
+     * Keyboard support
+     * @param event key being pressed
+     */
     public void handleKey(KeyEvent event){
         if (event.getCode() == KeyCode.ESCAPE){
-            logger.info("Escape pressed, going to menu scene");
+//            logger.info("Escape pressed, going to menu scene");
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
         }

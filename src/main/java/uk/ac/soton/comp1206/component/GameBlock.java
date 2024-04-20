@@ -152,7 +152,7 @@ public class GameBlock extends Canvas {
             paintColor(COLOURS[value.get()]);
         }
 
-        if (hoverOn){
+        if ((hoverOn) && (!(gameBoard instanceof PieceBoard)) ){
             gc.setFill(new Color(0.2, 0.2, 0.2, 0.7)); // 50% opacity
             gc.fillRect(0,0,width,height);
         }
@@ -200,7 +200,7 @@ public class GameBlock extends Canvas {
         // Values passed in constructor like: centerX, centerY, radius, focus angle, focus distance
         RadialGradient gradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE,
                 new Stop(0, Color.TRANSPARENT), // the black colour is transparent at the centre
-                new Stop(1, Color.rgb(0, 0, 0, 0.5)) // black colour at 50% opacity at the border
+                new Stop(1, Color.rgb(0, 0, 0, 0.3)) // black colour at 35% opacity at the border
         );
 
         gc.setFill(gradient);

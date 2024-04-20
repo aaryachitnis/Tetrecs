@@ -1,10 +1,10 @@
 ac:4570
+ari:3250
+ac:2720
 Verstappen:2000
 Sainz:1700
 Norris:1500
 Piastri:1300
+ac:1300
 Ricardo:1100
 Hamilton:900
-Leclerc:700
-aarya:680
-Vettel:500

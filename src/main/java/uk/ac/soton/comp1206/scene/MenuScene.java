@@ -83,7 +83,7 @@ public class MenuScene extends BaseScene {
         timeline.setCycleCount(Timeline.INDEFINITE); // to repeat animation indefinitely
         timeline.setAutoReverse(true); // reversing the animation to make it look like its "bouncing"
         timeline.play();
-        
+
         // Box to hold all the menu items
         VBox menu = new VBox();
         menu.setAlignment(Pos.CENTER);

@@ -182,7 +182,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         title.getStyleClass().add("title");
 
         // top pane
-        HBox topBox = new HBox(105); // Spacing between boxes
+        HBox topBox = new HBox(90); // Spacing between boxes
         topBox.getChildren().addAll(scoreBox, title, livesBox);
         mainPane.setTop(topBox);
         topBox.setPadding(new Insets(10, 10, 10, 10));  // Top, Right, Bottom, Left padding

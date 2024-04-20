@@ -33,13 +33,11 @@ public class ScoresList extends VBox{
 
     public void reveal(){
         // TODO: add animation
-//        logger.info("In reveal");
         for (Pair<String, Integer> pair : scoresListProperty) {
             String name = pair.getKey();
             Integer score = pair.getValue();
 
             Text line = new Text(name + ": " + score);
-//            logger.info(name + ": "  + score);
             line.getStyleClass().add("scorelist");
             getChildren().add(line);
         }
