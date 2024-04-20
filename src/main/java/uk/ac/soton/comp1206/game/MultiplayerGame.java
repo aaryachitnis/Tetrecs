@@ -46,7 +46,7 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
     public void initialiseGame() {
         logger.info("Initialising game");
         communicator.send("PIECE");
-        requestPlayersInfo();
+//        requestPlayersInfo();
     }
 
     @Override
@@ -64,27 +64,18 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
         return GamePiece.createPiece(getNextPieceValue());
     }
 
-    public void requestPlayersInfo(){
-        TimerTask getPlayerInfo = new TimerTask() {
-            public void run() {
-                communicator.send("SCORES");
-            }
-        };
-        timer.scheduleAtFixedRate(getPlayerInfo, 0, 2000L); // channels will be requested every 2 seconds
-    }
-
+    /**
+     * Handling messages received from server
+     * @param communication the message that was received
+     */
     public void receiveCommunication(String communication){
         if (communication.contains("PIECE")){
             // get the value of piece, convert it to string and set it as the nextPieceValue
             int value = Integer.parseInt(communication.split(" ")[1]);
             setNextPieceValue(value);
-        } else if (communication.contains("SCORES")){
-            updatePlayersInfo(communication);
         }
     }
 
-    public void updatePlayersInfo(String playersInfo){
-        logger.info("Players info: " + playersInfo);
-    }
+
 
 }

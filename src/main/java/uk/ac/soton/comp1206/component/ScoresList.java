@@ -34,18 +34,6 @@ public class ScoresList extends VBox{
         logger.info("scoresListProperty: " + scoresListProperty);
     }
 
-//    public void reveal(){
-//        // TODO: add animation
-//        for (Pair<String, Integer> pair : scoresListProperty) {
-//            String name = pair.getKey();
-//            Integer score = pair.getValue();
-//
-//            Text line = new Text(name + ": " + score);
-//            line.getStyleClass().add("scorelist");
-//            getChildren().add(line);
-//        }
-//    }
-
     public void reveal() {
         // Delay between each line reveal
         double delayPerLine = 0.5; // Adjust as needed

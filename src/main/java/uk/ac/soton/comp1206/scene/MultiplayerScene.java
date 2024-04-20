@@ -1,6 +1,10 @@
 package uk.ac.soton.comp1206.scene;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -10,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
@@ -22,6 +27,8 @@ import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,6 +40,9 @@ public class MultiplayerScene extends ChallengeScene{
      */
     protected MultiplayerGame multiGame;
 
+    /**
+     * To show players and their scores
+     */
     protected Leaderboard leaderboard;
 
     /**
@@ -46,7 +56,7 @@ public class MultiplayerScene extends ChallengeScene{
     protected Communicator communicator = gameWindow.getCommunicator();
 
     /**
-     * Timer to ask for scores and lives every 2 seconds
+     * Timer to ask for player info every 2 seconds
      */
     Timer timer = new Timer();
 
@@ -110,6 +120,7 @@ public class MultiplayerScene extends ChallengeScene{
         topBox.setPadding(new Insets(10, 10, 10, 10));  // Top, Right, Bottom, Left padding
 
         // leaderboard
+//        leaderboard.getPlayerInfoListProperty().bind(playersInfoList);
 //        mainPane.setLeft(leaderboard);
 //        leaderboard.getStyleClass().add("gameBox");
 
@@ -147,6 +158,7 @@ public class MultiplayerScene extends ChallengeScene{
     @Override
     public void initialise() {
         multiGame.start();
+//        requestPlayersInfo();
         scene.setOnKeyPressed(this::handleKey);
     }
 
@@ -265,4 +277,34 @@ public class MultiplayerScene extends ChallengeScene{
             gameWindow.showScoreScene(multiGame);
         });
     }
+
+//    public void requestPlayersInfo(){
+//        TimerTask getPlayerInfo = new TimerTask() {
+//            public void run() {
+//                communicator.send("SCORES");
+//            }
+//        };
+//        timer.scheduleAtFixedRate(getPlayerInfo, 0, 2000L); // channels will be requested every 2 seconds
+//    }
+//
+//    /**
+//     * Receiving messages from the sever
+//     * @param communication communication sent
+//     */
+//    public void receiveCommunication(String communication){
+//        if (communication.contains("SCORES")){
+//            String[] playerInfo = communication.split(" "); // to remove the "SCORES" part
+//            updatePlayersInfo(playerInfo[1]);
+//        }
+//    }
+//
+//    /**
+//     * Updates the player info in the list
+//     * @param info player info sent by server
+//     */
+//    public void updatePlayersInfo(String info){
+//        String[] playerline = info.split("\n");
+//
+//    }
+
 }
