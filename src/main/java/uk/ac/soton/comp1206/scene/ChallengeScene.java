@@ -2,6 +2,7 @@ package uk.ac.soton.comp1206.scene;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -209,10 +210,14 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
 
         // displaying PieceBoards for current and incoming pieces
         VBox pieceBoardBox = new VBox(20);
+
+        Button skipBtn = new Button("Skip piece");
+        skipBtn.getStyleClass().add("skip-button");
+
         incomingPiecesLabel.getStyleClass().add("incoming-pieces-heading");
-        pieceBoardBox.getChildren().addAll(incomingPiecesLabel,currentPieceBoard, incomingPieceBoard);
+        pieceBoardBox.getChildren().addAll(skipBtn, incomingPiecesLabel,currentPieceBoard, incomingPieceBoard);
         mainPane.setRight(pieceBoardBox);
-        pieceBoardBox.setTranslateY(100);
+        pieceBoardBox.setTranslateY(60);
         pieceBoardBox.setPadding(new Insets(20)); // 10 pixels padding
 
         // rotate current right piece if gameboard is right-clicked
@@ -220,6 +225,10 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             if (event.getButton() == MouseButton.SECONDARY) {
                 rotatePiece(false);
             }
+        });
+
+        skipBtn.setOnAction(event -> {
+            game.skipPiece();
         });
 
         // Set the time bar at the bottom of the pane

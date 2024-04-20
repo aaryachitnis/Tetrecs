@@ -532,8 +532,6 @@ public class Game {
      * Starts the timer and calls gameLoop method when the timer runs out
      */
     public void startTimer(){
-        // TODO: gameLoop shouldnt be called if piece is placed, start timer after piece has been placed?
-//        logger.info("timer started");
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
@@ -557,9 +555,27 @@ public class Game {
         startTimer();
     }
 
+    /**
+     * Stops timer
+     */
     public void stopTimer(){
         logger.info("Stopped timer");
         timer.cancel();
+    }
+
+
+    /**
+     * Allows you to skip piece
+     * But you lose a life
+     */
+    public void skipPiece(){
+        setLives((getLives().get()-1)); // lose a life
+        if (getLives().get() < 0){ // if lives left are 0, end the game
+            logger.info("Game over");
+            gameOverListener.onGameOver(); // go to the scores scene
+        }
+        nextPiece();
+        restartTimer();
     }
 
 }

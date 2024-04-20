@@ -291,3 +291,20 @@ TextField {
     -fx-font-family: 'Orbitron';
     -fx-fill: white;
 }
+
+.skip-button {
+    -fx-background-color: darkviolet;
+    -fx-text-fill: white;
+    -fx-font-family: 'Orbitron';
+    -fx-font-size: 18px;
+    -fx-font-weight: 300;
+    -fx-border-color: black;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, black, 1, 1.0, 1, 1);
+    -fx-padding: 10px 20px; /* Adjust padding for a bigger button */
+    -fx-border-radius: 5px; /* Rounds the corners of the border */
+}
+
+.skip-button:hover {
+    -fx-background-color: black; /* Changes the background color when hovered */
+}
