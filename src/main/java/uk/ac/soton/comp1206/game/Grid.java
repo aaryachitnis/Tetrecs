@@ -139,7 +139,6 @@ public class Grid {
                         return false;
                     }
                 }
-
             }
         }
         logger.info("Piece can be played");
@@ -173,11 +172,6 @@ public class Grid {
                     set(gridX,gridY, piece.getValue()); // write the piece's value to the grid at gridX and gridY
                 }
             }
-        }
-        if (play){
-            logger.info("Piece played"); // if the piece is played on the main gameboard
-        } else {
-            logger.info("Piece displayed on pieceboards");
         }
     }
 

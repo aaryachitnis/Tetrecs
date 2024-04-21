@@ -21,6 +21,7 @@ import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
+import uk.ac.soton.comp1206.utility.Multimedia;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -138,6 +139,12 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     Timer timer = new Timer();
 
     /**
+     * To play background music and sound effects
+     */
+    private final Multimedia multimedia = new Multimedia();
+
+
+    /**
      * Create a new Lobby scene for multiplayer games
      * @param gameWindow gameWindow
      */
@@ -159,6 +166,9 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
 
         var mainPane = new BorderPane();
         lobbyPane.getChildren().add(mainPane);
+
+        // play background music for menu scene
+        multimedia.playBgMusic("music/game_start.wav");
 
         title.setTranslateX(320);
 
@@ -208,6 +218,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         chatBoxBtnsBox.getChildren().add(startGameBtn);
 
         startGameBtn.setOnAction(actionEvent -> {
+            multimedia.playAudio("sounds/rotate.wav");
             communicator.send("START");
         });
 
@@ -216,12 +227,14 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         chatBoxBtnsBox.getChildren().add(leaveGameBtn);
 
         leaveGameBtn.setOnAction(actionEvent -> {
+            multimedia.playAudio("sounds/rotate.wav");
             communicator.send("PART"); // leave game
         });
 
 
         // Sending messages when user hits enter
         messageTextField.setOnAction(event -> {
+            multimedia.playAudio("sounds/message.wav");
             String enteredMsg = messageTextField.getText();
             messageTextField.clear();
             logger.info("Entered text: " + enteredMsg);
@@ -242,11 +255,13 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
 
         // Displaying text field when hostNewGamesBtn is clicked
         hostNewGamesBtn.setOnAction(event -> {
+            multimedia.playAudio("sounds/rotate.wav");
             hostNewGamesBtn.setDisable(true);
             TextField channelNameTextField = new TextField();
             hostGameBox.getChildren().add(channelNameTextField);
 
             channelNameTextField.setOnAction(creatGameEvent -> {
+                multimedia.playAudio("sounds/rotate.wav");
                 String channelName = channelNameTextField.getText(); // store the channel name user entered
                 logger.info("Hosting new game: " + channelName);
 
@@ -279,6 +294,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     public void handleKey(KeyEvent event){
         if (event.getCode() == KeyCode.ESCAPE){
             logger.info("Escape pressed, going to menu scene");
+            multimedia.stopBgMusic();
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             communicator.send("QUIT");// quit  from the server
             gameWindow.startMenu();
@@ -424,6 +440,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         String[] comm = communication.split(":");
         String name = comm[0].split(" ")[1]; // to remove the "MSG" part of the communication
         String msg = comm[1];
+        multimedia.playAudio("sounds/message.wav");
         messages.setText(messages.getText() + name + ": " + msg + "\n");
     }
 

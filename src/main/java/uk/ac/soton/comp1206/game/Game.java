@@ -310,15 +310,11 @@ public class Game {
         int x = gameBlock.getX();
         int y = gameBlock.getY();
 
-        logger.info("Block clicked, checking..");
         if (getGrid().canPlayPiece(getCurrentPiece(), x, y)){ // if the piece can be played
             getGrid().playPiece(getCurrentPiece(), x, y, true); // playing the piece
             afterPiece(); // to clear any line
-            logger.info("Cleared any lines");
-            logger.info("Next piece loading");
             nextPiece(); // loading the next piece
         } else {
-
             logger.info("Piece can't be played");
             multimedia.playAudio("sounds/fail.wav"); // play the fail sound if piece cant be plated
         }
@@ -331,7 +327,6 @@ public class Game {
      */
     public GamePiece spawnPiece(){
         Random random = new Random();
-        logger.info("Spawning new game piece");
         return GamePiece.createPiece(random.nextInt(15));
     }
 
@@ -339,7 +334,6 @@ public class Game {
      * Replaces the current piece with a new piece
      */
     public void nextPiece(){
-        logger.info("Next piece generated");
         setCurrentPiece(incomingPiece);
         incomingPiece = spawnPiece();
         nextPieceListener.nextPiece(currentPiece, incomingPiece);
@@ -369,7 +363,6 @@ public class Game {
                 }
             }
             if (canClear){
-                logger.info("Can clear row");
                 linesToClear++;
 
                 for (int x = 0; x < getCols(); x++){
@@ -392,7 +385,6 @@ public class Game {
                 }
             }
             if (canClear){
-                logger.info("Can clear column");
                 linesToClear++;
 
                 for (int y = 0; y < getCols(); y++){
@@ -407,11 +399,9 @@ public class Game {
             score(linesToClear, blocksToClear.size()); // update score
             setMultiplier((getMultiplier().get() + 1)); // increase the multiplier by 1
             updateLevel(); // updating level if score changes
-            logger.info("Score updated to: " + getScore().get() + ". multiplier updated to: " + getMultiplier().get());
         } else {
             // no lines to clear therefore score stays the same
             setMultiplier(1); // reset multiplier to 1 as no lines were cleared
-            logger.info("No lines cleared, score stays the same, multiplier reset");
         }
 
         // clearing blocks
@@ -419,8 +409,6 @@ public class Game {
             multimedia.playAudio("sounds/clear.wav"); // playing the sound for cleared lines
             clearBlocks(blocksToClear);
             lineClearedListener.lineCleared(blocksToClear); // sending blocksToClear to lineClearedListener for fadeOut effect
-        } else {
-            logger.info("No blocks to clear");
         }
 
         restartTimer();
@@ -474,10 +462,16 @@ public class Game {
      * Called if user wants to play the originally incoming piece before current piece
      */
     public void swapCurrentPiece(){
-        logger.info("Swapping pieces");
         GamePiece temp = getCurrentPiece();
         setCurrentPiece(getIncomingPiece());
         setIncomingPiece(temp);
+    }
+
+    /**
+     * Reduce the number of lives by 1
+     */
+    public void reduceLives(){
+        setLives(getLives().get()-1);
     }
 
     /**
@@ -485,14 +479,12 @@ public class Game {
      */
     public void setTimerDelay(){
         int delay = 12000 - 500 * getLevel().get();
-//        logger.info("timer delay: " + delay);
         // if delay is less than 2500, set timerDelay to 2500, otherwise the calculated delay
         if (delay >= 2500){
             timerDelay.set(delay);
         } else {
             timerDelay.set(2500);
         }
-//        logger.info("Timer delay set");
 
         gameLoopListener.setOnGameLoop(getTimerDelay().get()); // send the timer delay to the listener
     }
@@ -512,9 +504,10 @@ public class Game {
     public void gameLoop(){
         // lose a life
         multimedia.playAudio("sounds/lifelose.wav"); // play life lost sound
-        setLives(getLives().get()-1);
+        reduceLives();
         if (getLives().get() < 0){ // if lives left are 0, end the game
             logger.info("Game over");
+            multimedia.stopBgMusic();
             gameOverListener.onGameOver(); // go to the scores scene
         }
 
@@ -547,7 +540,6 @@ public class Game {
      * Stops and purges the timer before starting it again
      */
     public void restartTimer(){
-//        logger.info("restarting timer");
         if (timer != null){
             timer.cancel();
             timer.purge();
@@ -563,12 +555,13 @@ public class Game {
         timer.cancel();
     }
 
-
     /**
-     * Allows you to skip piece
-     * But you lose a life
+     * Allows you to skip piece, but you lose a life
+     * point is you don’t have to wait for timer to end if you know you can't play that piece
+     * or don't want to play that piece
      */
     public void skipPiece(){
+
         setLives((getLives().get()-1)); // lose a life
         if (getLives().get() < 0){ // if lives left are 0, end the game
             logger.info("Game over");

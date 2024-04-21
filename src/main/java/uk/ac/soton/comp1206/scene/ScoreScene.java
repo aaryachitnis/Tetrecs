@@ -25,6 +25,7 @@ import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
+import uk.ac.soton.comp1206.utility.Multimedia;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -105,6 +106,11 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
     protected Communicator communicator;
 
     /**
+     * To play background music
+     */
+    private final Multimedia multimedia = new Multimedia();
+
+    /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
      * @param gameWindow the game window
      */
@@ -129,6 +135,9 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
 
         var mainPane = new BorderPane();
         scoresPane.getChildren().add(mainPane);
+
+        // play background music for menu scene
+        multimedia.playBgMusic("music/menu.mp3");
 
         // setting up the communicator listener to receive messages
         communicator.addListener(this::receiveCommunication);
@@ -326,8 +335,6 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
             remoteScoresArrayList.add(new Pair<>(name, score)); // populate scoresArrayList
         }
         remoteScores = new SimpleListProperty<>(remoteScoresArrayList);
-        logger.info("remoteScoresArrayList size: " + remoteScoresArrayList.size());
-        logger.info("remoteScores size: " + remoteScores.size());
     }
 
     /**

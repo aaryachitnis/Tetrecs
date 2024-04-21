@@ -263,7 +263,6 @@ public class GameBlock extends Canvas {
      * Fades out the cleared blocks slowly
      */
     public void fadeOut(){
-        logger.info("blocks clear fadeOut animation");
         var gc = getGraphicsContext2D();
         opacity = 1;
 

@@ -144,6 +144,7 @@ public class MenuScene extends BaseScene {
      * @param event event
      */
     private void startSinglePlayerGame(ActionEvent event) {
+        multimedia.playAudio("sounds/rotate.wav");
         multimedia.stopBgMusic();
         logger.info("Starting single player game");
         gameWindow.startChallenge();
@@ -154,6 +155,8 @@ public class MenuScene extends BaseScene {
      * @param event event
      */
     private void startMultiplayerGame(ActionEvent event){
+        multimedia.playAudio("sounds/rotate.wav");
+        multimedia.stopBgMusic();
         logger.info("Starting multiplayer game");
         gameWindow.showLobbyScene();
     }
@@ -163,6 +166,8 @@ public class MenuScene extends BaseScene {
      * @param event event
      */
     private void displayInstructions(ActionEvent event){
+        multimedia.playAudio("sounds/rotate.wav");
+        multimedia.stopBgMusic();
         logger.info("Displaying instructions");
         gameWindow.showInstructions();
     }
@@ -172,6 +177,7 @@ public class MenuScene extends BaseScene {
      * @param event event
      */
     private void exit(ActionEvent event){
+        multimedia.playAudio("sounds/rotate.wav");
         logger.info("Exiting game");
         shutDownGame();
     }

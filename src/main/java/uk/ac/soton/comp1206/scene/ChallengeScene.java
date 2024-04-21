@@ -409,7 +409,6 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      * @param time time allocated in which user must place a piece
      */
     public void timeBar(int time){
-//        logger.info("showing time bar");
         long startTime = System.currentTimeMillis();
 
         AnimationTimer timer = new AnimationTimer() {

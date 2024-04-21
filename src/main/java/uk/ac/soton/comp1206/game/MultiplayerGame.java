@@ -76,6 +76,20 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
         }
     }
 
+    @Override
+    public void score(int linesToClear, int blocksToClear){
+        int scoreToAdd = linesToClear * blocksToClear * getMultiplier().get() * 10; // calculate the score to add
+        setScore( (getScore().get()) + scoreToAdd); // set new score
+        communicator.send("SCORE " + getScore().get());
+    }
 
-
+    @Override
+    public void reduceLives() {
+        setLives(getLives().get()-1); // reduce life
+        if (getLives().get() < 0 ){
+            communicator.send("DIE"); // send message to server that player is dead if lives go below 0
+        } else {
+            communicator.send("LIVES " + getLives().get()); // update the server with the new amount of lives left
+        }
+    }
 }

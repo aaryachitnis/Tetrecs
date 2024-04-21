@@ -18,6 +18,7 @@ import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import uk.ac.soton.comp1206.utility.Multimedia;
 
 /**
  * This class is responsible for displaying the instructions of how to play TetrECS
@@ -26,7 +27,12 @@ import javafx.scene.input.KeyEvent;
 
 public class InstructionScene extends BaseScene {
 
-    private static final Logger logger = LogManager.getLogger(MenuScene.class);
+    private static final Logger logger = LogManager.getLogger(InstructionScene.class);
+
+    /**
+     * For background music
+     */
+    protected Multimedia multimedia = new Multimedia();
 
     /**
      * Constructor to construct the instruction scene
@@ -53,6 +59,9 @@ public class InstructionScene extends BaseScene {
 
         var mainPane = new BorderPane();
         instructionPane.getChildren().add(mainPane);
+
+        // play background music for instruction scene
+        multimedia.playBgMusic("music/menu.mp3");
 
         // Title
         Text title = new Text("How to play");
@@ -126,6 +135,7 @@ public class InstructionScene extends BaseScene {
     public void escapePressed(KeyEvent event){
         if (event.getCode() == KeyCode.ESCAPE){
             logger.info("Escape pressed, going to menu scene");
+            multimedia.stopBgMusic();
             gameWindow.startMenu();
         }
     }
@@ -138,7 +148,6 @@ public class InstructionScene extends BaseScene {
     public PieceBoard displayPieces(int pieceNum){
         var pieceBoard = new PieceBoard(65,65);
         pieceBoard.showPiece(GamePiece.createPiece(pieceNum));
-        logger.info("Piece board with game piece created");
         return pieceBoard;
     }
 

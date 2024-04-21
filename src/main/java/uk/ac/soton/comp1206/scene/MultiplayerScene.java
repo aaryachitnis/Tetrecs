@@ -1,7 +1,6 @@
 package uk.ac.soton.comp1206.scene;
 
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,14 +19,11 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
 import uk.ac.soton.comp1206.component.GameBoard;
 import uk.ac.soton.comp1206.component.Leaderboard;
-import uk.ac.soton.comp1206.event.CommunicationsListener;
-import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.game.MultiplayerGame;
 import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,11 +35,6 @@ public class MultiplayerScene extends ChallengeScene{
      * Handles the logic of the game
      */
     protected MultiplayerGame multiGame;
-
-    /**
-     * To show players and their scores
-     */
-    protected Leaderboard leaderboard;
 
     /**
      * Title of the scene
@@ -60,13 +51,18 @@ public class MultiplayerScene extends ChallengeScene{
      */
     Timer timer = new Timer();
 
+    protected final ObservableList<String> playersInfoList = FXCollections.observableArrayList();
+
+    protected SimpleListProperty<String> playersInfo ;
+
+    protected Leaderboard leaderboard = new Leaderboard();
+
     /**
      * Create a new Multiplayer game scene
      * @param gameWindow the Game Window
      */
     public MultiplayerScene(GameWindow gameWindow) {
         super(gameWindow);
-//        communicator.addListener(this::receiveCommunication);
         logger.info("Creating Multiplayer Scene");
     }
 
@@ -86,6 +82,8 @@ public class MultiplayerScene extends ChallengeScene{
 
         var mainPane = new BorderPane();
         challengePane.getChildren().add(mainPane);
+
+        communicator.addListener(this::receiveCommunication);
 
         board = new GameBoard(multiGame.getGrid(),gameWindow.getWidth()/2,gameWindow.getWidth()/2);
         mainPane.setCenter(board);
@@ -119,18 +117,20 @@ public class MultiplayerScene extends ChallengeScene{
         mainPane.setTop(topBox);
         topBox.setPadding(new Insets(10, 10, 10, 10));  // Top, Right, Bottom, Left padding
 
-        // leaderboard
-//        leaderboard.getPlayerInfoListProperty().bind(playersInfoList);
-//        mainPane.setLeft(leaderboard);
-//        leaderboard.getStyleClass().add("gameBox");
-
         // displaying PieceBoards for current and incoming pieces
         VBox pieceBoardBox = new VBox(20);
         incomingPiecesLabel.getStyleClass().add("incoming-pieces-heading");
         pieceBoardBox.getChildren().addAll(incomingPiecesLabel,currentPieceBoard, incomingPieceBoard);
-        mainPane.setRight(pieceBoardBox);
-        pieceBoardBox.setTranslateY(100);
-        pieceBoardBox.setPadding(new Insets(20)); // 10 pixels padding
+
+        // right box
+        VBox rightBox = new VBox(30);
+        rightBox.getChildren().add(leaderboard);
+        rightBox.getChildren().add(pieceBoardBox);
+
+        mainPane.setRight(rightBox);
+//        rightBox.setTranslateY(100);
+        rightBox.setPadding(new Insets(20)); // 20 pixels padding
+
 
         // rotate current right piece if gameboard is right-clicked
         board.setOnMouseClicked(event -> {
@@ -158,7 +158,7 @@ public class MultiplayerScene extends ChallengeScene{
     @Override
     public void initialise() {
         multiGame.start();
-//        requestPlayersInfo();
+        requestPlayersInfo();
         scene.setOnKeyPressed(this::handleKey);
     }
 
@@ -218,6 +218,7 @@ public class MultiplayerScene extends ChallengeScene{
         if (event.getCode() == KeyCode.ESCAPE){ // escape key pressed
             logger.info("Escape pressed, going to menu scene");
             multimedia.stopBgMusic(); // stop background music
+            communicator.send("DIE");
             communicator.send("PART"); // Leaves the channel
             multiGame.stopTimer(); // stops timer
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
@@ -278,33 +279,43 @@ public class MultiplayerScene extends ChallengeScene{
         });
     }
 
-//    public void requestPlayersInfo(){
-//        TimerTask getPlayerInfo = new TimerTask() {
-//            public void run() {
-//                communicator.send("SCORES");
-//            }
-//        };
-//        timer.scheduleAtFixedRate(getPlayerInfo, 0, 2000L); // channels will be requested every 2 seconds
-//    }
-//
-//    /**
-//     * Receiving messages from the sever
-//     * @param communication communication sent
-//     */
-//    public void receiveCommunication(String communication){
-//        if (communication.contains("SCORES")){
-//            String[] playerInfo = communication.split(" "); // to remove the "SCORES" part
-//            updatePlayersInfo(playerInfo[1]);
-//        }
-//    }
-//
-//    /**
-//     * Updates the player info in the list
-//     * @param info player info sent by server
-//     */
-//    public void updatePlayersInfo(String info){
-//        String[] playerline = info.split("\n");
-//
-//    }
+        public void requestPlayersInfo(){
+        TimerTask getPlayerInfo = new TimerTask() {
+            public void run() {
+                communicator.send("SCORES");
+            }
+        };
+        timer.scheduleAtFixedRate(getPlayerInfo, 0, 2000L); // channels will be requested every 2 seconds
+    }
+
+    /**
+     * Receiving messages from the sever
+     * @param communication communication sent
+     */
+    public void receiveCommunication(String communication){
+        if (communication.contains("SCORES")){
+            String[] playerInfo = communication.split(" "); // to remove the "SCORES" part
+            updatePlayersInfo(playerInfo[1]);
+        }
+    }
+
+    /**
+     * Updates the player info in the list
+     * @param info player info sent by server
+     */
+    public void updatePlayersInfo(String info){
+        playersInfoList.clear();
+
+        String[] playerline = info.split("\n");
+        playersInfoList.addAll(Arrays.asList(playerline));
+        playersInfo = new SimpleListProperty<>(playersInfoList);
+        logger.info("playersInfoList size: " + playersInfoList.size() + " playersInfo size: " + playersInfo.size());
+        for (String temp : playersInfoList){
+            logger.info("contents of AL: " + temp);
+        }
+        leaderboard.getPlayersInfoListProperty().bind(playersInfo);
+        Platform.runLater(() -> leaderboard.reveal());
+    }
+
 
 }

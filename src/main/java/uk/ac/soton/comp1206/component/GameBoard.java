@@ -174,6 +174,10 @@ public class GameBoard extends GridPane {
         }
     }
 
+    /**
+     * Fade out animation on blocks that are cleared
+     * @param blocksToClear blocks that have been cleared
+     */
     public void fadeOut(HashSet<GameBlockCoordinate> blocksToClear){
         for (GameBlockCoordinate block : blocksToClear) { // iterate over the hash set
             getBlock(block.getX(), block.getY()).fadeOut(); // call fadeOut animation
