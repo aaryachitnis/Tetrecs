@@ -32,7 +32,7 @@ public class InstructionScene extends BaseScene {
     /**
      * For background music
      */
-    protected Multimedia multimedia = new Multimedia();
+    protected final Multimedia multimedia = new Multimedia();
 
     /**
      * Constructor to construct the instruction scene
@@ -101,13 +101,10 @@ public class InstructionScene extends BaseScene {
         for (int pieceNum = 0; pieceNum < 15; pieceNum++){
             if (pieceNum <= 6){
                 piecesSet1.getChildren().add(displayPieces(pieceNum));
-                logger.info("Piece added to piecesSet1");
             } else {
                 piecesSet2.getChildren().add(displayPieces(pieceNum));
-                logger.info("Piece added to piecesSet2");
             }
         }
-
 
         // Displaying game pieces title and pieceboards
         VBox gamePieces = new VBox(20);
@@ -150,9 +147,4 @@ public class InstructionScene extends BaseScene {
         pieceBoard.showPiece(GamePiece.createPiece(pieceNum));
         return pieceBoard;
     }
-
-
-
-
-
 }

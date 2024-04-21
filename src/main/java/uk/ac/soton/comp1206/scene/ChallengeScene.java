@@ -94,7 +94,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     /**
      * For sound effects
      */
-    protected Multimedia multimedia = new Multimedia();
+    protected final Multimedia multimedia = new Multimedia();
 
     /**
      * Main gameboard where pieces will be placed
@@ -329,25 +329,21 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
 
         // for swapping current and incoming piece
         if ( (event.getCode() == KeyCode.SPACE) || (event.getCode() == KeyCode.X) ){
-            logger.info("Swapping piece");
             swapPieces();
         }
 
         // for rotating the current piece right
         if ( (event.getCode() == KeyCode.Q) || (event.getCode() == KeyCode.Z) || (event.getCode() == KeyCode.OPEN_BRACKET)){
-            logger.info("Rotating piece to the right");
             rotatePiece(false);
         }
 
         // for rotating the current piece left
         if ( (event.getCode() == KeyCode.E) || (event.getCode() == KeyCode.C) || (event.getCode() == KeyCode.CLOSE_BRACKET)){
-            logger.info("Rotating piece to the left");
             rotatePiece(true);
         }
 
         // for dropping a piece on the board
         if ( (event.getCode() == KeyCode.ENTER) || (event.getCode() == KeyCode.X)){
-            logger.info("Dropping piece");
             blockSelected(selectedCol, selectedRow);
         }
 
@@ -392,7 +388,6 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      * @param selectedRow row number of the block currently selected
      */
     public void blockSelected(int selectedCol, int selectedRow){
-        logger.info("Dropping piece at the selected block");
         game.blockClicked(board.getBlock(selectedCol, selectedRow)); // playing piece at block selected using keys
     }
 

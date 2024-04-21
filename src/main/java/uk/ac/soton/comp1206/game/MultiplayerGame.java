@@ -5,16 +5,18 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.network.Communicator;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.TimerTask;
-
 public class MultiplayerGame extends Game implements CommunicationsListener {
 
     private static final Logger logger = LogManager.getLogger(MultiplayerGame.class);
 
+    /**
+     * the initial current and incoming pieces
+     */
     protected boolean piecesNotInitialised = true;
 
+    /**
+     * value of the next piece that is sent from the server
+     */
     protected int nextPieceValue;
 
     /**
@@ -27,6 +29,10 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
         communicator.addListener(this::receiveCommunication);
     }
 
+    /**
+     * Set the next piece value that you get from the server and initialise the current and incoming pieces
+     * @param value value of the piece
+     */
     public void setNextPieceValue(int value){
         nextPieceValue = value;
 
@@ -38,6 +44,10 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
         }
     }
 
+    /**
+     * Accessor method for nextPieceValue
+     * @return the value of the next piece
+     */
     public int getNextPieceValue(){
         return nextPieceValue;
     }
@@ -46,12 +56,10 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
     public void initialiseGame() {
         logger.info("Initialising game");
         communicator.send("PIECE");
-//        requestPlayersInfo();
     }
 
     @Override
     public void nextPiece(){
-        logger.info("Next piece generated");
         setCurrentPiece(incomingPiece);
         communicator.send("PIECE");
         incomingPiece = spawnPiece();
@@ -60,7 +68,6 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
 
     @Override
     public GamePiece spawnPiece(){
-        logger.info("Spawning piece of value: " + getNextPieceValue());
         return GamePiece.createPiece(getNextPieceValue());
     }
 

@@ -1,20 +1,14 @@
 package uk.ac.soton.comp1206.component;
 
 import javafx.animation.AnimationTimer;
-import javafx.animation.FadeTransition;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.paint.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javafx.util.Duration;
-
-import java.math.BigDecimal;
 
 /**
  * The Visual User Interface component representing a single block in the grid.
@@ -26,8 +20,6 @@ import java.math.BigDecimal;
  * The GameBlock value should be bound to a corresponding block in the Grid model.
  */
 public class GameBlock extends Canvas {
-
-    private static final Logger logger = LogManager.getLogger(GameBlock.class);
 
     /**
      * The set of colours for different pieces
@@ -152,8 +144,9 @@ public class GameBlock extends Canvas {
             paintColor(COLOURS[value.get()]);
         }
 
+        // hover effect
         if ((hoverOn) && (!(gameBoard instanceof PieceBoard)) ){
-            gc.setFill(new Color(0.2, 0.2, 0.2, 0.7)); // 50% opacity
+            gc.setFill(new Color(0.2, 0.2, 0.2, 0.7)); // 70% opacity
             gc.fillRect(0,0,width,height);
         }
     }
@@ -200,7 +193,7 @@ public class GameBlock extends Canvas {
         // Values passed in constructor like: centerX, centerY, radius, focus angle, focus distance
         RadialGradient gradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE,
                 new Stop(0, Color.TRANSPARENT), // the black colour is transparent at the centre
-                new Stop(1, Color.rgb(0, 0, 0, 0.3)) // black colour at 35% opacity at the border
+                new Stop(1, Color.rgb(0, 0, 0, 0.3)) // black colour at 30% opacity at the border
         );
 
         gc.setFill(gradient);
@@ -288,8 +281,7 @@ public class GameBlock extends Canvas {
                 }
             }
         };
-
-        fadeTimer.start();
+        fadeTimer.start(); // start the fade out
     }
 
 }

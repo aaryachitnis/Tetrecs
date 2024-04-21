@@ -8,12 +8,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
 import javafx.util.Duration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
+/**
+ * To show the scores in the score scene
+ */
 public class ScoresList extends VBox{
-
-    private static final Logger logger = LogManager.getLogger(ScoresList.class);
 
     /**
      * Bindable scores list
@@ -28,10 +27,12 @@ public class ScoresList extends VBox{
         return scoresListProperty;
     }
 
+    /**
+     * Constructs a VBox
+     */
     public ScoresList(){
         setSpacing(5);
         scoresListProperty = getScoresListProperty();
-        logger.info("scoresListProperty: " + scoresListProperty);
     }
 
     public void reveal() {

@@ -27,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Lobby Scene is the scene where users are able to host or join multiplayer games
+ */
 public class LobbyScene extends BaseScene implements CommunicationsListener{
 
     private static final Logger logger = LogManager.getLogger(LobbyScene.class);
@@ -275,6 +278,9 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         });
     }
 
+    /**
+     * Initialising Lobby scene
+     */
     public void initialise(){
 
         // adding listener to receive messages from server

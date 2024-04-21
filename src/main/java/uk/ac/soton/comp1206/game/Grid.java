@@ -21,7 +21,10 @@ public class Grid {
      */
     private static final Logger logger = LogManager.getLogger(Grid.class);
 
-    private Multimedia multimedia = new Multimedia();
+    /**
+     * To play sound effects
+     */
+    private final Multimedia multimedia = new Multimedia();
 
     /**
      * The number of columns in this grid
@@ -118,8 +121,6 @@ public class Grid {
      * @return whether the piece can be palyed
      */
     public boolean canPlayPiece(GamePiece piece, int x, int y){
-        logger.info("Checking if piece can be played");
-
         int[][] blocks = piece.getBlocks();
 
         // iterating over all blocks of a game piece

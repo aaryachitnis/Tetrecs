@@ -2,7 +2,6 @@ package uk.ac.soton.comp1206.game;
 
 /**
  * Instances of GamePiece Represents the model of a specific Game Piece with its block makeup.
- *
  * The GamePiece class also contains a factory for producing a GamePiece of a particular shape, as specified by it's
  * number.
  */
@@ -210,7 +209,6 @@ public class GamePiece {
         blocks = rotated;
     }
 
-
     /**
      * Return the string representation of this piece
      * @return the name of this piece
@@ -218,7 +216,4 @@ public class GamePiece {
     public String toString() {
         return this.name;
     }
-
-
-
 }

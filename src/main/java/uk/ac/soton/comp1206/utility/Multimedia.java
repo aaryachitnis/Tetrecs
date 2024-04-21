@@ -78,6 +78,9 @@ public class Multimedia {
 
     }
 
+    /**
+     * Stops the background music. Used when changing scene
+     */
     public void stopBgMusic(){
         musicPlayer.stop();
     }

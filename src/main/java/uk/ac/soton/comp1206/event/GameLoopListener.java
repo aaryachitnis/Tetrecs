@@ -1,7 +1,7 @@
 package uk.ac.soton.comp1206.event;
 
 /**
- * Listens to the time allocated for a piece to be placed before a life is lost
+ * GameLoopListener listens to the time allocated for a piece to be placed before a life is lost
  */
 public interface GameLoopListener {
 

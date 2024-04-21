@@ -2,14 +2,11 @@ package uk.ac.soton.comp1206.component;
 
 import javafx.beans.property.SimpleListProperty;
 import javafx.scene.text.Text;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
-
+/**
+ * VBox to show players and their scores during a multiplayer game
+ */
 public class Leaderboard extends ScoresList{
-
-    private static final Logger logger = LogManager.getLogger(Leaderboard.class);
 
     /**
      * Bindable scores list
@@ -24,6 +21,9 @@ public class Leaderboard extends ScoresList{
         return playersInfoListProperty;
     }
 
+    /**
+     * Constructor for Leaderboard
+     */
     public Leaderboard(){
         playersInfoListProperty = getPlayersInfoListProperty();
     }
@@ -38,7 +38,6 @@ public class Leaderboard extends ScoresList{
             String lives = parts[2];
 
             Text info = new Text(name + ": " + score);
-            logger.info(name + ": "  + score);
             info.getStyleClass().add("scorelist");
 
             // Cross out player if they are dead
@@ -47,9 +46,6 @@ public class Leaderboard extends ScoresList{
             }
 
             getChildren().add(info);
-
-
-
         }
     }
 }

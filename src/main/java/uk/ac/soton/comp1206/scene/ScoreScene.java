@@ -122,6 +122,9 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
         logger.info("Creating score scene");
     }
 
+    /**
+     * Building the scores scene
+     */
     public void build(){
         logger.info("Building " + this.getClass().getName());
 
@@ -218,6 +221,9 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
         }
     }
 
+    /**
+     * Initialising the scores scene
+     */
     public void initialise(){
         scene.setOnKeyPressed(this::handleKey); // handle key being pressed
     }
@@ -362,7 +368,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
      */
     public void handleKey(KeyEvent event){
         if (event.getCode() == KeyCode.ESCAPE){
-//            logger.info("Escape pressed, going to menu scene");
+            logger.info("Escape pressed, going to menu scene");
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
         }

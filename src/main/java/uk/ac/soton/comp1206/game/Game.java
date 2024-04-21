@@ -44,7 +44,7 @@ public class Game {
     /**
      * For playing sounds and background music
      */
-    protected Multimedia multimedia = new Multimedia();
+    protected final Multimedia multimedia = new Multimedia();
 
     /**
      * The piece that the user is interacting with
@@ -55,8 +55,6 @@ public class Game {
      * The next piece that will follow
      */
     protected GamePiece incomingPiece;
-
-//    protected GamePiece incomingPiece = spawnPiece();
 
     /**
      * Bindable property for score
@@ -258,9 +256,16 @@ public class Game {
         lives.set(newLives);
     }
 
-
+    /**
+     * To communicate with the server
+     */
     protected Communicator communicator;
 
+    /**
+     * Create a new game with the specified rows and columns. Creates a corresponding grid model.
+     * @param cols number of columns
+     * @param rows number of rows
+     */
     public Game(int cols, int rows) {
         this.cols = cols;
         this.rows = rows;
@@ -270,9 +275,10 @@ public class Game {
     }
 
     /**
-     * Create a new game with the specified rows and columns. Creates a corresponding grid model.
+     * Create a new game with the specified rows and columns and a communicator. Creates a corresponding grid model.
      * @param cols number of columns
      * @param rows number of rows
+     * @param comm communicator for the multiplayer game
      */
     public Game(int cols, int rows, Communicator comm) {
         this.communicator = comm;
@@ -485,7 +491,6 @@ public class Game {
         } else {
             timerDelay.set(2500);
         }
-
         gameLoopListener.setOnGameLoop(getTimerDelay().get()); // send the timer delay to the listener
     }
 

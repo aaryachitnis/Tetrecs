@@ -1,7 +1,7 @@
 package uk.ac.soton.comp1206.event;
 
 /**
- * Listens to when lives remaining is below zero
+ * GameOverListener listens to when lives remaining is below zero
  */
 public interface GameOverListener {
     /**

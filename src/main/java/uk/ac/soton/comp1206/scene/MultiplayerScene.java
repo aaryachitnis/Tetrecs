@@ -13,7 +13,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.component.GameBlock;
@@ -28,6 +27,9 @@ import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * The Multiplayer game scene. Holds the UI for the multiplayer game mode in the game.
+ */
 public class MultiplayerScene extends ChallengeScene{
     private static final Logger logger = LogManager.getLogger(MultiplayerScene.class);
 
@@ -51,10 +53,19 @@ public class MultiplayerScene extends ChallengeScene{
      */
     Timer timer = new Timer();
 
+    /**
+     * Observable ArrayList containing the player name, score and lives
+     */
     protected final ObservableList<String> playersInfoList = FXCollections.observableArrayList();
 
+    /**
+     * Bindable property in which playerInfoList will be wrapped
+     */
     protected SimpleListProperty<String> playersInfo ;
 
+    /**
+     * Leaderboard component to show players scores
+     */
     protected Leaderboard leaderboard = new Leaderboard();
 
     /**
@@ -128,7 +139,6 @@ public class MultiplayerScene extends ChallengeScene{
         rightBox.getChildren().add(pieceBoardBox);
 
         mainPane.setRight(rightBox);
-//        rightBox.setTranslateY(100);
         rightBox.setPadding(new Insets(20)); // 20 pixels padding
 
 
@@ -316,6 +326,4 @@ public class MultiplayerScene extends ChallengeScene{
         leaderboard.getPlayersInfoListProperty().bind(playersInfo);
         Platform.runLater(() -> leaderboard.reveal());
     }
-
-
 }
