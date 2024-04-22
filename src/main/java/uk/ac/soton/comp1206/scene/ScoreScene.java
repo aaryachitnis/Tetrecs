@@ -108,7 +108,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
     /**
      * To play background music
      */
-    private final Multimedia multimedia = new Multimedia();
+    private Multimedia multimedia = new Multimedia();
 
     /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
@@ -369,6 +369,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
     public void handleKey(KeyEvent event){
         if (event.getCode() == KeyCode.ESCAPE){
             logger.info("Escape pressed, going to menu scene");
+            multimedia.stopBgMusic();
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
         }

@@ -187,27 +187,12 @@
     -fx-font-family: 'Orbitron';
 }
 
-.scoreitem {
-
-}
-
-.scorer {
-
-}
-
 .myscore {
     -fx-font-weight: 700;
 }
 
 .deadscore {
     -fx-strikethrough: true;
-}
-
-.points {
-}
-
-.channelList {
-
 }
 
 .channelItem {

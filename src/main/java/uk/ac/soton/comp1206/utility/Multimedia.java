@@ -45,8 +45,6 @@ public class Multimedia {
      */
     public void playAudio(String audioFilePath){
         String audioToPlay = Multimedia.class.getResource("/" + audioFilePath).toExternalForm();
-        logger.info("Playing audio: " + audioToPlay);
-
         try {
             Media media = new Media(audioToPlay);
             setAudioPlayer(media);
@@ -64,7 +62,6 @@ public class Multimedia {
      */
     public void playBgMusic(String musicFilePath){
         String musicToPlay = Multimedia.class.getResource("/" + musicFilePath).toExternalForm();
-        logger.info("Playing background music: " + musicToPlay);
 
         try {
             Media media = new Media(musicToPlay);
@@ -82,6 +79,6 @@ public class Multimedia {
      * Stops the background music. Used when changing scene
      */
     public void stopBgMusic(){
-        musicPlayer.stop();
+        this.musicPlayer.stop();
     }
 }

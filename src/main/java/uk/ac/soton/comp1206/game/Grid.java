@@ -174,6 +174,9 @@ public class Grid {
                 }
             }
         }
+        if (play){
+            logger.info("Piece played");
+        }
     }
 
 }

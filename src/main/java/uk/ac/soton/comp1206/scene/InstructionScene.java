@@ -66,7 +66,7 @@ public class InstructionScene extends BaseScene {
         // Title
         Text title = new Text("How to play");
         title.getStyleClass().add("instructions-title");
-        title.setTranslateX(350);
+        title.setTranslateX(320);
 
         // Description of the game
         Label description = new Label("TetrECS is fast paced block placing game. Aim of the game is to place pieces of blocks strategically to clear horizontal and vertical lines to increase your score. You lose a life if you don't place a piece before the timer runs out. Good luck!");

@@ -228,6 +228,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         });
 
         skipBtn.setOnAction(event -> {
+            multimedia.playAudio("sounds/rotate.wav");
             game.skipPiece();
         });
 
@@ -433,8 +434,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     public void gameOver(){
         // go to the Scores Scene
         Platform.runLater(() -> {
-            multimedia.stopBgMusic(); // stop bg music
-            multimedia.playAudio("sounds/transition.wav"); // transition to score scene
+            multimedia.stopBgMusic(); // stop background music
             game.stopTimer(); // stop timer
             gameWindow.showScoreScene(game);
         });

@@ -230,6 +230,8 @@ public class MultiplayerScene extends ChallengeScene{
             multimedia.stopBgMusic(); // stop background music
             communicator.send("DIE");
             communicator.send("PART"); // Leaves the channel
+            timer.purge();
+            timer.cancel();
             multiGame.stopTimer(); // stops timer
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
@@ -285,6 +287,7 @@ public class MultiplayerScene extends ChallengeScene{
             multimedia.stopBgMusic(); // stop bg music
             multimedia.playAudio("sounds/transition.wav"); // transition to score scene
             multiGame.stopTimer(); // stop timer
+            gameWindow.cleanup(); // clean up multi player scene
             gameWindow.showScoreScene(multiGame);
         });
     }

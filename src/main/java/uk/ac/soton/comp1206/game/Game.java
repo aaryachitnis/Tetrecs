@@ -44,7 +44,7 @@ public class Game {
     /**
      * For playing sounds and background music
      */
-    protected final Multimedia multimedia = new Multimedia();
+    protected Multimedia multimedia = new Multimedia();
 
     /**
      * The piece that the user is interacting with
@@ -512,7 +512,6 @@ public class Game {
         reduceLives();
         if (getLives().get() < 0){ // if lives left are 0, end the game
             logger.info("Game over");
-            multimedia.stopBgMusic();
             gameOverListener.onGameOver(); // go to the scores scene
         }
 
