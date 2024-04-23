@@ -227,10 +227,10 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             }
         });
 
-//        skipBtn.setOnAction(event -> {
-//            multimedia.playAudio("sounds/rotate.wav");
-//            game.skipPiece();
-//        });
+        skipBtn.setOnAction(event -> {
+            multimedia.playAudio("sounds/rotate.wav");
+            game.skipPiece();
+        });
 
         // Set the time bar at the bottom of the pane
         mainPane.setBottom(timeBar);
@@ -324,7 +324,6 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             logger.info("Escape pressed, going to menu scene");
             multimedia.stopBgMusic(); // stop background music
             game.stopTimer(); // stops timer
-            gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
         }
 
