@@ -24,6 +24,7 @@ import uk.ac.soton.comp1206.ui.GameWindow;
 import uk.ac.soton.comp1206.utility.Multimedia;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -87,7 +88,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     /**
      * Contains all the available channels
      */
-    protected VBox channelsBox = new VBox(5);
+    protected VBox channelsBox = new VBox(10);
 
     /**
      * Will contain the channel name and messages of the game a user joins
@@ -316,7 +317,7 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
                 communicator.send("LIST");
             }
         };
-        timer.scheduleAtFixedRate(getChannels, 0, 2000L); // channels will be requested every 2 seconds
+        timer.scheduleAtFixedRate(getChannels, 0, 1000L); // channels will be requested every second
     }
 
     /**
@@ -358,15 +359,11 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
     public void displayChannels(String channels){
         Platform.runLater(() -> {
             channelsBox.getChildren().clear(); // clear any previous channels being displayed
-            String[] splitChannelNames = channels.split(" ");
-            ArrayList<String> channelsList = new ArrayList<>(); // arraylist containing all the channels
-
-            for (int i = 1; i < splitChannelNames.length; i++) {
-                channelsList.add(splitChannelNames[i]);  // Add each channel name to the list
-            }
+            String[] temp = channels.split(" "); // to remove "CHANNELS" part
+            String[] channelNames = temp[1].split("\n");
 
             // displaying every channel name
-            for (String channel : channelsList){
+            for (String channel : channelNames){
                 Button channelNameBtn = new Button(channel);
                 channelNameBtn.getStyleClass().add("channelItem");
                 channelsBox.getChildren().add(channelNameBtn);

@@ -227,10 +227,10 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             }
         });
 
-        skipBtn.setOnAction(event -> {
-            multimedia.playAudio("sounds/rotate.wav");
-            game.skipPiece();
-        });
+//        skipBtn.setOnAction(event -> {
+//            multimedia.playAudio("sounds/rotate.wav");
+//            game.skipPiece();
+//        });
 
         // Set the time bar at the bottom of the pane
         mainPane.setBottom(timeBar);
@@ -329,7 +329,7 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
         }
 
         // for swapping current and incoming piece
-        if ( (event.getCode() == KeyCode.SPACE) || (event.getCode() == KeyCode.X) ){
+        if ( (event.getCode() == KeyCode.SPACE) || (event.getCode() == KeyCode.R) ){
             swapPieces();
         }
 
@@ -348,17 +348,24 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
             blockSelected(selectedCol, selectedRow);
         }
 
+        if (event.getCode().isArrowKey()) {
+            event.consume(); // Consume the event to prevent default behavior
+        }
+
         // cursor
         if ( (event.getCode() == KeyCode.UP) || (event.getCode() == KeyCode.W) ){
             // move up
             moveBlock(-1, 0);
-        } else if ((event.getCode() == KeyCode.RIGHT) || (event.getCode() == KeyCode.D)) {
+        }
+        if ((event.getCode() == KeyCode.RIGHT) || (event.getCode() == KeyCode.D)) {
             // move right
             moveBlock(0, 1);
-        } else if ( (event.getCode() == KeyCode.LEFT) || (event.getCode() == KeyCode.A) ) {
+        }
+        if ( (event.getCode() == KeyCode.LEFT) || (event.getCode() == KeyCode.A) ) {
             // move left
             moveBlock(0, -1);
-        } else if ( (event.getCode() == KeyCode.DOWN) || (event.getCode() == KeyCode.S) ) {
+        }
+        if ( (event.getCode() == KeyCode.DOWN) || (event.getCode() == KeyCode.S) ) {
             // move down
             moveBlock(1, 0);
         }

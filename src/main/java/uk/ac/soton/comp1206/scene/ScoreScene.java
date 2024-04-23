@@ -168,7 +168,6 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
         mainPane.setTop(titlesTopPane);
 
         loadScores(); // populate the scoresArrayList to update localScores
-        logger.info("Scores have been loaded");
 
         // binding the ScoresList scores to the ScoresScene scores list
         scoresList.getScoresListProperty().bind(localScores);
@@ -258,15 +257,16 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
             // Reading from the file for populating the scoresArrayList
             BufferedReader fileReader = new BufferedReader(new FileReader(localScoresFile));
             String line;
+            scoresArrayList.clear();
             while ((line = fileReader.readLine()) != null){
                 String[] parts = line.split(":", 2); // Split the line into two parts
                 String name = parts[0];
                 String scoreString = parts[1];
                 Integer score = Integer.parseInt(scoreString); // convert score from string to int
                 scoresArrayList.add(new Pair<>(name, score)); // populate scoresArrayList
-                localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
             }
             fileReader.close();
+            localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
 
         } catch (IOException e) {
             logger.error("loadScores method didnt execute");
@@ -374,5 +374,4 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
             gameWindow.startMenu();
         }
     }
-
 }

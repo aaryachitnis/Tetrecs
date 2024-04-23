@@ -8,11 +8,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
 import javafx.util.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import uk.ac.soton.comp1206.scene.ScoreScene;
 
 /**
  * To show the scores in the score scene
  */
 public class ScoresList extends VBox{
+    private static final Logger logger = LogManager.getLogger(ScoresList.class);
 
     /**
      * Bindable scores list
@@ -36,11 +40,8 @@ public class ScoresList extends VBox{
     }
 
     public void reveal() {
-        // Delay between each line reveal
-        double delayPerLine = 0.5; // Adjust as needed
-
-        // Initialize delay for each line
-        double totalDelay = 0.0;
+        logger.info("Revealing scores..");
+        this.getChildren().clear();
 
         for (Pair<String, Integer> pair : scoresListProperty) {
             String name = pair.getKey();
@@ -51,17 +52,8 @@ public class ScoresList extends VBox{
 
             getChildren().add(line); // adding line to the VBox container
 
-            // Animation to display each line one by one
-            Timeline timeline = new Timeline();
-            line.setOpacity(0); // line is transparent at the start
-            // Using Key frame to change opacity from 0 to 1
-            timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(totalDelay),
-                    new KeyValue(line.opacityProperty(), 1)));
-            totalDelay += delayPerLine; // incrementing total delay for the next lin
-            timeline.play();
         }
     }
-
 }
 
 
