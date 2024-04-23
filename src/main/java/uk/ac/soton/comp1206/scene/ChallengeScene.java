@@ -452,17 +452,22 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
      */
     public String getHighScore(){
         // Get the top high score when starting a game in the ChallengeScene and display it in the UI
+        File localScoresFile = new File("localScores.txt");
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("localScores.txt"))) {
-            String firstLine = reader.readLine();  // Read only the first line
-            if (firstLine != null) {
-                String[] parts = firstLine.split(":", 2); // Split the line into two parts
-                return parts[1];
+        if (localScoresFile.exists()){
+            try (BufferedReader reader = new BufferedReader(new FileReader(localScoresFile))) {
+                String firstLine = reader.readLine();  // Read only the first line
+                if (firstLine != null) {
+                    String[] parts = firstLine.split(":", 2); // Split the line into two parts
+                    return parts[1];
+                }
+            } catch (IOException e) {
+                logger.info("Exception in getting high score");
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            logger.info("Exception in getting high score");
-            e.printStackTrace();
+            return "";
+        } else {
+            return "N/A"; // localScores.txt hasn't been created yet therefore there's no high score on record
         }
-        return "";
     }
 }

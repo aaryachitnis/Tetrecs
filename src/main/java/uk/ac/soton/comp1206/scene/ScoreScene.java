@@ -306,6 +306,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
                 return true; // Return true if there is a new high score
             }
         }
+        logger.info("No new high score set");
         return false; // Return false if there is no new high score
     }
 
