@@ -169,9 +169,9 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
 
         loadScores(); // populate the scoresArrayList to update localScores
 
-        // binding the ScoresList scores to the ScoresScene scores list
-        scoresList.getScoresListProperty().bind(localScores);
-        remoteScoresList.getScoresListProperty().bind(remoteScores);
+//        // binding the ScoresList scores to the ScoresScene scores list
+//        scoresList.getScoresListProperty().bind(localScores);
+//        remoteScoresList.getScoresListProperty().bind(remoteScores);
 
         VBox localHighScoreList = new VBox(localHighScoreTitle, scoresList);
         VBox remoteHighscoreList = new VBox(onlineHighScoreTitle, remoteScoresList);
@@ -204,20 +204,39 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
                 logger.info("Name submitted: " + playerName);
                 centerBox.getChildren().remove(nameBox);
                 centerBox.getChildren().add(scoresBox);
+
                 newHighScoreSet(playerName); // write new high score to localScores.txt
                 writeOnlineScore(playerName); // send high score to server
                 loadScores();
+
+                scoresList.getScoresListProperty().bind(localScores);
+                remoteScoresList.getScoresListProperty().bind(remoteScores);
+
                 scoresList.reveal(); // displaying the scores
                 remoteScoresList.reveal();
             });
-        }
-
-        if (!checkNewHighScore()){ // if there is no new high score, display the high score list directly
+        } else {
+            scoresList.getScoresListProperty().bind(localScores);
+            remoteScoresList.getScoresListProperty().bind(remoteScores);
             localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
             centerBox.getChildren().add(scoresBox);
             scoresList.reveal(); // displaying the scores
             remoteScoresList.reveal();
         }
+
+//        if (!checkNewHighScore()){ // if there is no new high score, display the high score list directly
+//            scoresList.getScoresListProperty().bind(localScores);
+//            remoteScoresList.getScoresListProperty().bind(remoteScores);
+//            localScores.setAll(scoresArrayList); // update the SimpleListProperty localScores
+//            centerBox.getChildren().add(scoresBox);
+//            scoresList.reveal(); // displaying the scores
+//            remoteScoresList.reveal();
+//        }
+
+//        scoresList.getScoresListProperty().bind(localScores);
+//        remoteScoresList.getScoresListProperty().bind(remoteScores);
+//        scoresList.reveal(); // displaying the scores
+//        remoteScoresList.reveal();
     }
 
     /**
@@ -318,7 +337,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
         logger.info("updating scoresArrayList after a new high score was set");
 
         // remove the last element so that there's only 10 elements in the list
-        logger.info("scoresArrayList size: " + scoresArrayList.size());
+//        logger.info("scoresArrayList size: " + scoresArrayList.size());
         scoresArrayList.remove(9);
 
         // add their name and score to the list

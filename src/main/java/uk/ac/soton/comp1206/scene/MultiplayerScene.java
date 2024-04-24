@@ -322,10 +322,6 @@ public class MultiplayerScene extends ChallengeScene{
         String[] playerline = info.split("\n");
         playersInfoList.addAll(Arrays.asList(playerline));
         playersInfo = new SimpleListProperty<>(playersInfoList);
-        logger.info("playersInfoList size: " + playersInfoList.size() + " playersInfo size: " + playersInfo.size());
-        for (String temp : playersInfoList){
-            logger.info("contents of AL: " + temp);
-        }
         leaderboard.getPlayersInfoListProperty().bind(playersInfo);
         Platform.runLater(() -> leaderboard.reveal());
     }
