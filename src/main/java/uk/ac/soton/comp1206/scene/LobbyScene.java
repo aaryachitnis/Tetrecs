@@ -302,8 +302,8 @@ public class LobbyScene extends BaseScene implements CommunicationsListener{
         if (event.getCode() == KeyCode.ESCAPE){
             logger.info("Escape pressed, going to menu scene");
             multimedia.stopBgMusic();
-            gameWindow.cleanup(); // clean up the window before going back to the menu scene
             communicator.send("QUIT");// quit  from the server
+            timer.cancel();
             gameWindow.startMenu();
         }
     }

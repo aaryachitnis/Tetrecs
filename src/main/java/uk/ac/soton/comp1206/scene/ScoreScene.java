@@ -171,7 +171,6 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
 
 //        // binding the ScoresList scores to the ScoresScene scores list
 //        scoresList.getScoresListProperty().bind(localScores);
-//        remoteScoresList.getScoresListProperty().bind(remoteScores);
 
         VBox localHighScoreList = new VBox(localHighScoreTitle, scoresList);
         VBox remoteHighscoreList = new VBox(onlineHighScoreTitle, remoteScoresList);
@@ -390,7 +389,6 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
         if (event.getCode() == KeyCode.ESCAPE){
             logger.info("Escape pressed, going to menu scene");
             multimedia.stopBgMusic();
-            gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
         }
     }

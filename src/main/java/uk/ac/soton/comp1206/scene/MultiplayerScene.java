@@ -228,50 +228,43 @@ public class MultiplayerScene extends ChallengeScene{
         if (event.getCode() == KeyCode.ESCAPE){ // escape key pressed
             logger.info("Escape pressed, going to menu scene");
             multimedia.stopBgMusic(); // stop background music
-            communicator.send("DIE");
-            communicator.send("PART"); // Leaves the channel
             timer.purge();
             timer.cancel();
             multiGame.stopTimer(); // stops timer
+            communicator.send("DIE");
+            communicator.send("PART"); // Leaves the channel
             gameWindow.cleanup(); // clean up the window before going back to the menu scene
             gameWindow.startMenu();
         }
 
-        // for swapping current and incoming piece
-        if ( (event.getCode() == KeyCode.SPACE) || (event.getCode() == KeyCode.X) ){
-            logger.info("Swapping piece");
-            swapPieces();
-        }
-
-        // for rotating the current piece right
-        if ( (event.getCode() == KeyCode.Q) || (event.getCode() == KeyCode.Z) || (event.getCode() == KeyCode.OPEN_BRACKET)){
-            logger.info("Rotating piece to the right");
-            rotatePiece(false);
-        }
-
         // for rotating the current piece left
         if ( (event.getCode() == KeyCode.E) || (event.getCode() == KeyCode.C) || (event.getCode() == KeyCode.CLOSE_BRACKET)){
-            logger.info("Rotating piece to the left");
             rotatePiece(true);
         }
 
         // for dropping a piece on the board
         if ( (event.getCode() == KeyCode.ENTER) || (event.getCode() == KeyCode.X)){
-            logger.info("Dropping piece");
             blockSelected(selectedCol, selectedRow);
+        }
+
+        if (event.getCode().isArrowKey()) {
+            event.consume(); // Consume the event to prevent default behavior
         }
 
         // cursor
         if ( (event.getCode() == KeyCode.UP) || (event.getCode() == KeyCode.W) ){
             // move up
             moveBlock(-1, 0);
-        } else if ((event.getCode() == KeyCode.RIGHT) || (event.getCode() == KeyCode.D)) {
+        }
+        if ((event.getCode() == KeyCode.RIGHT) || (event.getCode() == KeyCode.D)) {
             // move right
             moveBlock(0, 1);
-        } else if ( (event.getCode() == KeyCode.LEFT) || (event.getCode() == KeyCode.A) ) {
+        }
+        if ( (event.getCode() == KeyCode.LEFT) || (event.getCode() == KeyCode.A) ) {
             // move left
             moveBlock(0, -1);
-        } else if ( (event.getCode() == KeyCode.DOWN) || (event.getCode() == KeyCode.S) ) {
+        }
+        if ( (event.getCode() == KeyCode.DOWN) || (event.getCode() == KeyCode.S) ) {
             // move down
             moveBlock(1, 0);
         }
@@ -287,12 +280,13 @@ public class MultiplayerScene extends ChallengeScene{
             multimedia.stopBgMusic(); // stop bg music
             multimedia.playAudio("sounds/transition.wav"); // transition to score scene
             multiGame.stopTimer(); // stop timer
+            timer.cancel();
             gameWindow.cleanup(); // clean up multi player scene
             gameWindow.showScoreScene(multiGame);
         });
     }
 
-        public void requestPlayersInfo(){
+    public void requestPlayersInfo(){
         TimerTask getPlayerInfo = new TimerTask() {
             public void run() {
                 communicator.send("SCORES");

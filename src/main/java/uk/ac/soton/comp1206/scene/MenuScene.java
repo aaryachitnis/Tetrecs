@@ -185,6 +185,7 @@ public class MenuScene extends BaseScene {
      */
     public void handleKey(KeyEvent event){
         if (event.getCode() == KeyCode.ESCAPE){
+            logger.info("Exiting game");
             shutDownGame();
         }
     }
