@@ -134,9 +134,11 @@ public class Grid {
                 if (blocks[row][col] != 0) { // if the block of the piece isn't empty
                     if ( (gridX < getCols()) || (gridY < getRows())){ // checks if piece is within the boundary of the game grid
                         if (get(gridX, gridY) != 0){ // if piece already exists in this block
+                            logger.info("Piece can't be played");
                             return false; // piece can't be played if it is
                         }
                     } else {
+                        logger.info("Piece can't be played");
                         return false;
                     }
                 }

@@ -5,6 +5,10 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.event.CommunicationsListener;
 import uk.ac.soton.comp1206.network.Communicator;
 
+/**
+ * MultiplayerGame holds the logic for a multiplayer game
+ * Extends Game class because the main logic is the same
+ */
 public class MultiplayerGame extends Game implements CommunicationsListener {
 
     private static final Logger logger = LogManager.getLogger(MultiplayerGame.class);
@@ -23,6 +27,7 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
      * Create a new game with the specified rows and columns. Creates a corresponding grid model.
      * @param cols number of columns
      * @param rows number of rows
+     * @param comm communicator object to communicate with the server
      */
     public MultiplayerGame(int cols, int rows, Communicator comm) {
         super(cols, rows, comm);

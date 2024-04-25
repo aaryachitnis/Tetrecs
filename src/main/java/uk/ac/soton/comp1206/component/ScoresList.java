@@ -39,6 +39,9 @@ public class ScoresList extends VBox{
         scoresListProperty = getScoresListProperty();
     }
 
+    /**
+     * Reveals the scores on the Score scene
+     */
     public void reveal() {
         logger.info("Revealing scores..");
         this.getChildren().clear();

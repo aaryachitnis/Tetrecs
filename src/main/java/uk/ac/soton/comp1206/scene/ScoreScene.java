@@ -113,6 +113,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
     /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
      * @param gameWindow the game window
+     * @param g Game object so that Score scene can access the score achieved
      */
     public ScoreScene(GameWindow gameWindow, Game g) {
         super(gameWindow);
@@ -351,6 +352,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
 
     /**
      * Populate the remoteScores using the communication received from server
+     * @param hiscores the communication received from server about the online high scores of players
      */
     public void loadOnlineScores(String[] hiscores){
         for (String hiscore : hiscores){
@@ -364,6 +366,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
 
     /**
      * Submit the high score to the server
+     * @param playerName the name entered by the player when they are prompted for their name after achieving a high score
      */
     public void writeOnlineScore(String playerName){
         communicator.send("HISCORE " + playerName + ":" + newScore);

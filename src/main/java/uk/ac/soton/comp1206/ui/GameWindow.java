@@ -97,7 +97,8 @@ public class GameWindow {
     }
 
     /**
-     * Display score scene
+     * Displays the Score scene
+     * @param game so that Score scene can access the score achieved in the game
      */
     public void showScoreScene(Game game){
         loadScene(new ScoreScene(this, game));

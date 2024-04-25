@@ -286,6 +286,10 @@ public class MultiplayerScene extends ChallengeScene{
         });
     }
 
+    /**
+     * Requests player info from the server
+     * Requests for player name, score and lives remaining
+     */
     public void requestPlayersInfo(){
         TimerTask getPlayerInfo = new TimerTask() {
             public void run() {
