@@ -91,7 +91,7 @@ public class InstructionScene extends BaseScene {
         // Title
         Text piecesTitle = new Text("Game pieces");
         piecesTitle.getStyleClass().add("title");
-        piecesTitle.setTranslateX(320);
+        piecesTitle.setTranslateX(280);
 
         // Boxes for the piece boards, one will contain 7 and one will contain 8
         HBox piecesSet1 = new HBox(10);
@@ -110,9 +110,9 @@ public class InstructionScene extends BaseScene {
         VBox gamePieces = new VBox(20);
         gamePieces.getChildren().add(piecesTitle);
         gamePieces.getChildren().add(piecesSet1);
-        piecesSet1.setTranslateX(140);
+        piecesSet1.setTranslateX(130);
         gamePieces.getChildren().add(piecesSet2);
-        piecesSet2.setTranslateX(105);
+        piecesSet2.setTranslateX(100);
         gamePieces.setPadding(new Insets(15));
         mainPane.setCenter(gamePieces);
     }

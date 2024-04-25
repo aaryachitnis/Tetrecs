@@ -440,8 +440,9 @@ public class ChallengeScene extends BaseScene implements NextPieceListener, Line
     public void gameOver(){
         // go to the Scores Scene
         Platform.runLater(() -> {
+            logger.info("Game over, showing scores...");
             multimedia.stopBgMusic(); // stop background music
-            game.stopTimer(); // stop timer
+//            game.stopTimer(); // stop timer
             gameWindow.showScoreScene(game);
         });
     }

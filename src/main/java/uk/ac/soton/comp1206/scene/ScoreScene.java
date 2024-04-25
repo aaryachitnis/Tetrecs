@@ -263,7 +263,7 @@ public class ScoreScene extends BaseScene implements CommunicationsListener {
                 writer.write("Sainz:1700\n");
                 writer.write("Norris:1500\n");
                 writer.write("Piastri:1300\n");
-                writer.write("Ricardo:1100\n");
+                writer.write("Riccardo:1100\n");
                 writer.write("Hamilton:900\n");
                 writer.write("Leclerc:700\n");
                 writer.write("Vettel:500\n");

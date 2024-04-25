@@ -104,4 +104,5 @@ public class MultiplayerGame extends Game implements CommunicationsListener {
             communicator.send("LIVES " + getLives().get()); // update the server with the new amount of lives left
         }
     }
+
 }

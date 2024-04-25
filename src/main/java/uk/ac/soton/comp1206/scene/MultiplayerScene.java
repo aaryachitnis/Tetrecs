@@ -281,7 +281,6 @@ public class MultiplayerScene extends ChallengeScene{
             multimedia.playAudio("sounds/transition.wav"); // transition to score scene
             multiGame.stopTimer(); // stop timer
             timer.cancel();
-            gameWindow.cleanup(); // clean up multi player scene
             gameWindow.showScoreScene(multiGame);
         });
     }

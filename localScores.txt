@@ -1,10 +1,10 @@
+aarya:7530
 Verstappen:2000
 Sainz:1700
 Norris:1500
 Piastri:1300
-aarya:1150
 Ricardo:1100
 Hamilton:900
 Leclerc:700
-aaaaa:550
 Vettel:500
+Ocon:300

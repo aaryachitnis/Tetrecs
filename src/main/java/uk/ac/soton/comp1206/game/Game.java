@@ -303,6 +303,7 @@ public class Game {
      */
     public void initialiseGame() {
         logger.info("Initialising game");
+        logger.info("Lives: " + getLives().get());
         incomingPiece = spawnPiece();
         nextPiece();
     }
@@ -507,13 +508,14 @@ public class Game {
      * Lose a life, current piece is discarded, multiplier is reset to 1 and timer is reset
      */
     public void gameLoop(){
+//        logger.info("Game loop");
         // lose a life
         multimedia.playAudio("sounds/lifelose.wav"); // play life lost sound
+
         reduceLives();
-        if (getLives().get() < 0){ // if lives left are 0, end the game
-            logger.info("Game over");
-            gameOverListener.onGameOver(); // go to the scores scene
-        }
+//        setLives(getLives().get()-1);
+
+        restartTimer(); // restart timer
 
         // current piece is replaced with the incoming piece which is replaced by a new piece
         nextPiece();
@@ -521,14 +523,21 @@ public class Game {
         // reset multiplier to 1
         setMultiplier(1);
 
+        if (getLives().get() < 0){ // if lives left are 0, end the game
+            logger.info("Game over");
+            stopTimer();
+            gameOverListener.onGameOver(); // go to the scores scene
+        }
+
         // resetting timer
-        startTimer(); // restart timer
+//        startTimer(); // restart timer
     }
 
     /**
      * Starts the timer and calls gameLoop method when the timer runs out
      */
     public void startTimer(){
+//        logger.info("Starting timer");
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
@@ -544,9 +553,11 @@ public class Game {
      * Stops and purges the timer before starting it again
      */
     public void restartTimer(){
+//        logger.info("Restarting timer");
         if (timer != null){
-            timer.cancel();
-            timer.purge();
+            stopTimer();
+//            timer.cancel();
+//            timer.purge();
         }
         startTimer();
     }
@@ -555,8 +566,9 @@ public class Game {
      * Stops timer
      */
     public void stopTimer(){
-        logger.info("Stopped timer");
+//        logger.info("Stopped timer");
         timer.cancel();
+        timer.purge();
     }
 
     /**
@@ -566,13 +578,16 @@ public class Game {
      */
     public void skipPiece(){
 
-        setLives((getLives().get()-1)); // lose a life
+//        setLives((getLives().get()-1)); // lose a life
+        reduceLives(); // lose a life
         if (getLives().get() < 0){ // if lives left are 0, end the game
             logger.info("Game over");
+            stopTimer();
             gameOverListener.onGameOver(); // go to the scores scene
+        } else {
+            nextPiece();
+            restartTimer();
         }
-        nextPiece();
-        restartTimer();
     }
 
 }
